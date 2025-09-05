@@ -115,29 +115,6 @@
                                 <label class="form-check-label" for="remember">Remember me</label>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
-                            <p class="text-center mb-0">Don't have an account? <a href="#" id="show-register">Register</a></p>
-                        </form>
-
-                        <form id="admin-register-form" class="mt-4" style="display: none;">
-                            <h2 class="text-center fw-bold mb-4">Admin Registration</h2>
-                            <div class="mb-3">
-                                <label class="form-label">Full Name</label>
-                                <input type="text" class="form-control" id="register-name" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="register-email" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Password</label>
-                                <input type="password" class="form-control" id="register-password" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Confirm Password</label>
-                                <input type="password" class="form-control" id="register-confirm-password" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 mb-3">Register</button>
-                            <p class="text-center mb-0">Already have an account? <a href="#" id="show-login">Login</a></p>
                         </form>
                     </div>
                 </div>
@@ -709,9 +686,11 @@
         let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
         let payments = JSON.parse(localStorage.getItem('payments')) || [];
         let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
-        let adminUsers = JSON.parse(localStorage.getItem('adminUsers')) || [];
-        let currentAdmin = null;
         let razorpaySettings = JSON.parse(localStorage.getItem('razorpaySettings')) || { key: '', secret: '' };
+
+        // Fixed admin credentials
+        const adminEmail = "admin@hotelinfinity.com";
+        const adminPassword = "admin123";
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', function() {
@@ -732,7 +711,6 @@
         function checkAdminLogin() {
             const loggedInAdmin = localStorage.getItem('currentAdmin');
             if (loggedInAdmin) {
-                currentAdmin = JSON.parse(loggedInAdmin);
                 document.getElementById('admin-login').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
             } else {
@@ -743,30 +721,14 @@
 
         // Set up event listeners
         function setupEventListeners() {
-            // Admin login/register toggle
-            document.getElementById('show-register').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('admin-login-form').style.display = 'none';
-                document.getElementById('admin-register-form').style.display = 'block';
-            });
-
-            document.getElementById('show-login').addEventListener('click', function(e) {
-                e.preventDefault();
-                document.getElementById('admin-register-form').style.display = 'none';
-                document.getElementById('admin-login-form').style.display = 'block';
-            });
-
             // Admin login form submission
             document.getElementById('admin-login-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const email = document.getElementById('login-email').value;
                 const password = document.getElementById('login-password').value;
                 
-                const admin = adminUsers.find(user => user.email === email && user.password === password);
-                
-                if (admin) {
-                    currentAdmin = admin;
-                    localStorage.setItem('currentAdmin', JSON.stringify(admin));
+                if (email === adminEmail && password === adminPassword) {
+                    localStorage.setItem('currentAdmin', JSON.stringify({email: adminEmail}));
                     document.getElementById('admin-login').style.display = 'none';
                     document.getElementById('admin-panel').style.display = 'block';
                 } else {
@@ -774,43 +736,13 @@
                 }
             });
 
-            // Admin register form submission
-            document.getElementById('admin-register-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const confirmPassword = document.getElementById('register-confirm-password').value;
-                
-                if (password !== confirmPassword) {
-                    alert('Passwords do not match');
-                    return;
-                }
-                
-                if (adminUsers.some(user => user.email === email)) {
-                    alert('Admin with this email already exists');
-                    return;
-                }
-                
-                const newAdmin = { name, email, password };
-                adminUsers.push(newAdmin);
-                localStorage.setItem('adminUsers', JSON.stringify(adminUsers));
-                
-                alert('Registration successful! Please login.');
-                document.getElementById('admin-register-form').reset();
-                document.getElementById('admin-register-form').style.display = 'none';
-                document.getElementById('admin-login-form').style.display = 'block';
-            });
-
             // Logout button
             document.getElementById('logout').addEventListener('click', function(e) {
                 e.preventDefault();
                 localStorage.removeItem('currentAdmin');
-                currentAdmin = null;
                 document.getElementById('admin-panel').style.display = 'none';
                 document.getElementById('admin-login').style.display = 'block';
-                document.getElementById('admin-login-form').style.display = 'block';
-                document.getElementById('admin-register-form').style.display = 'none';
+                document.getElementById('admin-login-form').reset();
             });
 
             // Sidebar navigation
