@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -19,81 +18,126 @@
         }
         
         body {
-            font-family: 'Poppins', sans-serif;
-            scroll-behavior: smooth;
-        }
-        
-        .admin-panel {
-            background: #f5f7f9;
-            min-height: 100vh;
-        }
-        
-        .sidebar {
-            background: var(--dark);
-            color: white;
-            min-height: 100vh;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar a {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 15px 20px;
-            display: block;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar a:hover, .sidebar a.active {
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-        }
-        
-        .chart-container {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            background-color: #f5f7f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         
         .login-container {
             background: white;
             border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
         
-        .btn-primary {
-            background: var(--primary);
-            border: none;
+        .admin-panel {
+            display: none;
         }
         
-        .btn-primary:hover {
-            background: var(--secondary);
+        .sidebar {
+            background-color: var(--dark);
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            transition: all 0.3s;
+            z-index: 1000;
         }
         
-        .image-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-right: 10px;
-            margin-bottom: 10px;
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: all 0.3s;
         }
         
-        .amenity-tag {
-            display: inline-block;
-            background: var(--accent);
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 0.8rem;
+        .nav-link {
+            color: #fff;
+            padding: 12px 20px;
+            display: block;
+            transition: all 0.3s;
         }
         
-        .table-responsive {
-            overflow-x: auto;
+        .nav-link:hover {
+            background-color: var(--primary);
+            padding-left: 25px;
+        }
+        
+        .card-dashboard {
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .content-section {
+            display: none;
+        }
+        
+        .active-section {
+            display: block;
+        }
+        
+        .table-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        .room-card {
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .badge {
+            font-size: 0.75rem;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                text-align: center;
+            }
+            
+            .sidebar .nav-text {
+                display: none;
+            }
+            
+            .main-content {
+                margin-left: 70px;
+            }
         }
     </style>
 </head>
-<body class="admin-panel">
+<body>
     <!-- Admin Login -->
     <div id="admin-login" class="py-5">
         <div class="container">
@@ -115,6 +159,7 @@
                                 <label class="form-check-label" for="remember">Remember me</label>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mb-3">Login</button>
+                            <div id="login-message" class="alert alert-danger d-none"></div>
                         </form>
                     </div>
                 </div>
@@ -123,546 +168,830 @@
     </div>
 
     <!-- Admin Panel -->
-    <div id="admin-panel" class="container-fluid" style="display: none;">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="p-4">
-                    <h5 class="text-white fw-bold mb-4">Hotel Infinity Admin</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a></li>
-                        <li><a href="#manage-rooms"><i class="fas fa-bed me-2"></i> Manage Rooms</a></li>
-                        <li><a href="#manage-halls"><i class="fas fa-building me-2"></i> Manage Party Halls</a></li>
-                        <li><a href="#manage-bookings"><i class="fas fa-calendar-check me-2"></i> Bookings</a></li>
-                        <li><a href="#manage-payments"><i class="fas fa-credit-card me-2"></i> Payments</a></li>
-                        <li><a href="#manage-reviews"><i class="fas fa-star me-2"></i> Reviews</a></li>
-                        <li><a href="#settings"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                        <li><a href="#" id="logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                    </ul>
+    <div id="admin-panel" class="admin-panel">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="p-4 text-center border-bottom">
+                <h4 class="m-0">Hotel Infinity</h4>
+                <p class="text-muted mb-0">Admin Panel</p>
+            </div>
+            <div class="nav-links mt-4">
+                <a href="#" class="nav-link active" data-section="dashboard">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" data-section="bookings">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    <span class="nav-text">Bookings</span>
+                </a>
+                <a href="#" class="nav-link" data-section="rooms">
+                    <i class="fas fa-bed me-2"></i>
+                    <span class="nav-text">Rooms & Halls</span>
+                </a>
+                <a href="#" class="nav-link" data-section="customers">
+                    <i class="fas fa-users me-2"></i>
+                    <span class="nav-text">Customers</span>
+                </a>
+                <a href="#" class="nav-link" data-section="payments">
+                    <i class="fas fa-credit-card me-2"></i>
+                    <span class="nav-text">Payments</span>
+                    <span class="notification-badge">3</span>
+                </a>
+                <a href="#" class="nav-link" data-section="reviews">
+                    <i class="fas fa-star me-2"></i>
+                    <span class="nav-text">Reviews</span>
+                    <span class="notification-badge">5</span>
+                </a>
+                <a href="#" class="nav-link" data-section="reports">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    <span class="nav-text">Reports</span>
+                </a>
+                <a href="#" class="nav-link" data-section="settings">
+                    <i class="fas fa-cog me-2"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+                <a href="#" class="nav-link" id="logout-btn">
+                    <i class="fas fa-sign-out-alt me-2"></i>
+                    <span class="nav-text">Logout</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Dashboard</h3>
+                <div class="d-flex align-items-center">
+                    <div class="position-relative me-4">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="notification-badge">5</span>
+                    </div>
+                    <div class="position-relative me-4">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-2"></i>Admin User
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" id="dropdown-logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 ml-sm-auto px-4 py-4">
-                <!-- Dashboard Section -->
-                <div id="dashboard">
-                    <h2 class="fw-bold mb-4">Dashboard</h2>
-                    <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Rooms</h5>
-                                    <h2 class="fw-bold" id="total-rooms">0</h2>
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="content-section active-section">
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card p-3 text-white">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Total Bookings</h5>
+                                    <h2>128</h2>
+                                </div>
+                                <div>
+                                    <i class="fas fa-calendar-check fa-2x"></i>
                                 </div>
                             </div>
+                            <p class="mb-0">+15% from last month</p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Halls</h5>
-                                    <h2 class="fw-bold" id="total-halls">0</h2>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card p-3 text-white">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Occupancy Rate</h5>
+                                    <h2>78%</h2>
+                                </div>
+                                <div>
+                                    <i class="fas fa-bed fa-2x"></i>
                                 </div>
                             </div>
+                            <p class="mb-0">+5% from last month</p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Bookings</h5>
-                                    <h2 class="fw-bold" id="total-bookings">0</h2>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card p-3 text-white">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Revenue</h5>
+                                    <h2>$12,560</h2>
+                                </div>
+                                <div>
+                                    <i class="fas fa-dollar-sign fa-2x"></i>
                                 </div>
                             </div>
+                            <p class="mb-0">+20% from last month</p>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Revenue</h5>
-                                    <h2 class="fw-bold" id="total-revenue">₹0</h2>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="stat-card p-3 text-white">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h5>Customers</h5>
+                                    <h2>84</h2>
                                 </div>
+                                <div>
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                            <p class="mb-0">+10% from last month</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-8 mb-3">
+                        <div class="card-dashboard p-3">
+                            <h5 class="mb-3">Revenue Chart</h5>
+                            <canvas id="revenueChart" height="250"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="card-dashboard p-3">
+                            <h5 class="mb-3">Room Occupancy</h5>
+                            <canvas id="occupancyChart" height="250"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card-dashboard p-3">
+                            <h5 class="mb-3">Recent Bookings</h5>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Booking ID</th>
+                                            <th>Customer</th>
+                                            <th>Room Type</th>
+                                            <th>Check-In</th>
+                                            <th>Check-Out</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>#12345</td>
+                                            <td>John Smith</td>
+                                            <td>Deluxe Suite</td>
+                                            <td>2023-10-15</td>
+                                            <td>2023-10-20</td>
+                                            <td><span class="badge bg-success">Confirmed</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#12346</td>
+                                            <td>Emily Johnson</td>
+                                            <td>Standard Room</td>
+                                            <td>2023-10-16</td>
+                                            <td>2023-10-18</td>
+                                            <td><span class="badge bg-warning">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>#12347</td>
+                                            <td>Michael Brown</td>
+                                            <td>Executive Suite</td>
+                                            <td>2023-10-18</td>
+                                            <td>2023-10-25</td>
+                                            <td><span class="badge bg-success">Confirmed</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                                <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Booking Statistics</h5>
-                                <canvas id="bookingChart" height="250"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Revenue Sources</h5>
-                                <canvas id="revenueChart" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
+            <!-- Bookings Section -->
+            <div id="bookings" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Bookings Management</h4>
+                    <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>New Booking</button>
+                </div>
+                
+                <div class="card-dashboard p-4 mb-4">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Customer Ratings</h5>
-                                <canvas id="ratingsChart" height="250"></canvas>
-                            </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Filter by Status</label>
+                            <select class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="confirmed">Confirmed</option>
+                                <option value="pending">Pending</option>
+                                <option value="cancelled">Cancelled</option>
+                                <option value="completed">Completed</option>
+                            </select>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Customer Acquisition</h5>
-                                <canvas id="acquisitionChart" height="250"></canvas>
-                            </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Check-In Date</label>
+                            <input type="date" class="form-control">
                         </div>
-                    </div>
-                </div>
-
-                <!-- Manage Rooms Section -->
-                <div id="manage-rooms" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Rooms</h2>
-                    <div class="card mb-4">
-                        <div class="card-header bg-white">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRoomModal">
-                                <i class="fas fa-plus me-2"></i>Add New Room
-                            </button>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Check-Out Date</label>
+                            <input type="date" class="form-control">
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th>Price</th>
-                                            <th>Capacity</th>
-                                            <th>Amenities</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="rooms-table-body">
-                                        <!-- Rooms data will be populated here -->
-                                    </tbody>
-                                </table>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Search</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Search bookings...">
+                                <button class="btn btn-secondary" type="button"><i class="fas fa-search"></i></button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Manage Halls Section -->
-                <div id="manage-halls" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Party Halls</h2>
-                    <div class="card mb-4">
-                        <div class="card-header bg-white">
-                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addHallModal">
-                                <i class="fas fa-plus me-2"></i>Add New Hall
-                            </button>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Price</th>
-                                            <th>Capacity</th>
-                                            <th>Amenities</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="halls-table-body">
-                                        <!-- Halls data will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Room</th>
+                                <th>Check-In</th>
+                                <th>Check-Out</th>
+                                <th>Guests</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#12345</td>
+                                <td>John Smith</td>
+                                <td>Deluxe Suite (Room 201)</td>
+                                <td>2023-10-15</td>
+                                <td>2023-10-20</td>
+                                <td>2 Adults</td>
+                                <td>$1,200</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#12346</td>
+                                <td>Emily Johnson</td>
+                                <td>Standard Room (Room 105)</td>
+                                <td>2023-10-16</td>
+                                <td>2023-10-18</td>
+                                <td>1 Adult</td>
+                                <td>$300</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#12347</td>
+                                <td>Michael Brown</td>
+                                <td>Executive Suite (Room 301)</td>
+                                <td>2023-10-18</td>
+                                <td>2023-10-25</td>
+                                <td>2 Adults, 1 Child</td>
+                                <td>$2,100</td>
+                                <td><span class="badge bg-success">Confirmed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
+                
+                <nav aria-label="Page navigation" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
 
-                <!-- Manage Bookings Section -->
-                <div id="manage-bookings" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Bookings</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Booking ID</th>
-                                            <th>Customer</th>
-                                            <th>Type</th>
-                                            <th>Item</th>
-                                            <th>Check-in</th>
-                                            <th>Check-out</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="bookings-table-body">
-                                        <!-- Bookings data will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Rooms & Halls Section -->
+            <div id="rooms" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Rooms & Halls Management</h4>
+                    <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add New Room</button>
                 </div>
-
-                <!-- Manage Payments Section -->
-                <div id="manage-payments" style="display: none;">
-                    <h2 class="fw-bold mb-4">Payment History</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Payment ID</th>
-                                            <th>Booking ID</th>
-                                            <th>Customer</th>
-                                            <th>Amount</th>
-                                            <th>Date</th>
-                                            <th>Method</th>
-                                            <th>Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="payments-table-body">
-                                        <!-- Payments data will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Manage Reviews Section -->
-                <div id="manage-reviews" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Reviews</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Review ID</th>
-                                            <th>Customer</th>
-                                            <th>Rating</th>
-                                            <th>Comment</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="reviews-table-body">
-                                        <!-- Reviews data will be populated here -->
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Settings Section -->
-                <div id="settings" style="display: none;">
-                    <h2 class="fw-bold mb-4">Settings</h2>
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Amenities Management</h5>
+                
+                <div class="row mb-4">
+                    <div class="col-md-9">
+                        <div class="card-dashboard p-3">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Add New Amenity</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="new-amenity">
-                                            <button class="btn btn-primary" id="add-amenity-btn">Add</button>
-                                        </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Room Type</label>
+                                    <select class="form-select">
+                                        <option value="">All Types</option>
+                                        <option value="standard">Standard Room</option>
+                                        <option value="deluxe">Deluxe Room</option>
+                                        <option value="suite">Suite</option>
+                                        <option value="hall">Conference Hall</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Status</label>
+                                    <select class="form-select">
+                                        <option value="">All Statuses</option>
+                                        <option value="available">Available</option>
+                                        <option value="occupied">Occupied</option>
+                                        <option value="maintenance">Maintenance</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Search</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Search rooms...">
+                                        <button class="btn btn-secondary" type="button"><i class="fas fa-search"></i></button>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">Current Amenities</label>
-                                        <div id="amenities-list" class="p-3 border rounded">
-                                            <!-- Amenities will be listed here -->
-                                        </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card-dashboard p-3 h-100 d-flex flex-column justify-content-center">
+                            <h5 class="text-center">Total Rooms</h5>
+                            <h2 class="text-center">24</h2>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="room-card card">
+                            <img src="https://placehold.co/600x400/0f4c75/ffffff?text=Deluxe+Suite" class="card-img-top" alt="Deluxe Suite">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title m-0">Deluxe Suite</h5>
+                                    <span class="badge bg-success">Available</span>
+                                </div>
+                                <p class="card-text">Spacious suite with king bed, living area, and premium amenities.</p>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-user me-1"></i> 2 Adults</span>
+                                    <span><i class="fas fa-bed me-1"></i> 1 King Bed</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-primary m-0">$199/<small>night</small></h4>
+                                    <div>
+                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="card mb-4">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Razorpay Settings</h5>
-                            <form id="razorpay-settings">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Key ID</label>
-                                        <input type="text" class="form-control" id="razorpay-key" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Key Secret</label>
-                                        <input type="password" class="form-control" id="razorpay-secret" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    <div class="col-md-4 mb-4">
+                        <div class="room-card card">
+                            <img src="https://placehold.co/600x400/3282b8/ffffff?text=Standard+Room" class="card-img-top" alt="Standard Room">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title m-0">Standard Room</h5>
+                                    <span class="badge bg-success">Available</span>
+                                </div>
+                                <p class="card-text">Comfortable room with queen bed and essential amenities.</p>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-user me-1"></i> 2 Adults</span>
+                                    <span><i class="fas fa-bed me-1"></i> 1 Queen Bed</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-primary m-0">$99/<small>night</small></h4>
+                                    <div>
+                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-4">
+                        <div class="room-card card">
+                            <img src="https://placehold.co/600x400/1b262c/ffffff?text=Conference+Hall" class="card-img-top" alt="Conference Hall">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title m-0">Conference Hall A</h5>
+                                    <span class="badge bg-warning">Booked</span>
+                                </div>
+                                <p class="card-text">Large conference hall with capacity for 100 people.</p>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span><i class="fas fa-users me-1"></i> 100 People</span>
+                                    <span><i class="fas fa-chalkboard me-1"></i> Projector</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h4 class="text-primary m-0">$500/<small>day</small></h4>
+                                    <div>
+                                        <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                        <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Add Room Modal -->
-    <div class="modal fade" id="addRoomModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Room</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <!-- Payments Section -->
+            <div id="payments" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Payments Management</h4>
+                    <button class="btn btn-primary"><i class="fas fa-plus me-2"></i>Add Payment</button>
                 </div>
-                <div class="modal-body">
-                    <form id="add-room-form">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Room Name</label>
-                                <input type="text" class="form-control" id="room-name" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Room Type</label>
-                                <select class="form-select" id="room-type" required>
-                                    <option value="AC">AC</option>
-                                    <option value="Non-AC">Non-AC</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Price (₹)</label>
-                                <input type="number" class="form-control" id="room-price" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Capacity</label>
-                                <input type="number" class="form-control" id="room-capacity" required>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="room-description" rows="3" required></textarea>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Amenities</label>
-                                <select class="form-select" id="room-amenities" multiple>
-                                    <!-- Amenities options will be populated here -->
-                                </select>
-                                <div class="form-text">Hold Ctrl to select multiple amenities</div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Or Add Custom Amenity</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="room-custom-amenity">
-                                    <button type="button" class="btn btn-outline-secondary" id="add-room-custom-amenity">Add</button>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Upload Images</label>
-                                <input type="file" class="form-control" id="room-images" multiple accept="image/*">
-                                <div class="form-text">You can select multiple images</div>
-                                <div id="room-images-preview" class="mt-2"></div>
-                            </div>
+                
+                <div class="card-dashboard p-4 mb-4">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Payment Status</label>
+                            <select class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="completed">Completed</option>
+                                <option value="pending">Pending</option>
+                                <option value="failed">Failed</option>
+                                <option value="refunded">Refunded</option>
+                            </select>
                         </div>
-                    </form>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select">
+                                <option value="">All Methods</option>
+                                <option value="credit_card">Credit Card</option>
+                                <option value="debit_card">Debit Card</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">From Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">To Date</label>
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="save-room">Save Room</button>
+                
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Payment ID</th>
+                                <th>Booking ID</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#PAY78901</td>
+                                <td>#12345</td>
+                                <td>John Smith</td>
+                                <td>$1,200.00</td>
+                                <td>Credit Card</td>
+                                <td>2023-10-10</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY78902</td>
+                                <td>#12346</td>
+                                <td>Emily Johnson</td>
+                                <td>$300.00</td>
+                                <td>PayPal</td>
+                                <td>2023-10-12</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#PAY78903</td>
+                                <td>#12347</td>
+                                <td>Michael Brown</td>
+                                <td>$2,100.00</td>
+                                <td>Bank Transfer</td>
+                                <td>2023-10-15</td>
+                                <td><span class="badge bg-success">Completed</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Add Hall Modal -->
-    <div class="modal fade" id="addHallModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Party Hall</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <!-- Reviews Section -->
+            <div id="reviews" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>Customer Reviews</h4>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-primary me-2"><i class="fas fa-download me-2"></i>Export</button>
+                        <button class="btn btn-primary"><i class="fas fa-chart-pie me-2"></i>Analytics</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form id="add-hall-form">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Hall Name</label>
-                                <input type="text" class="form-control" id="hall-name" required>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3 mb-3">
+                        <div class="card-dashboard p-3 text-center">
+                            <h1 class="display-4 text-warning">4.8</h1>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Price (₹)</label>
-                                <input type="number" class="form-control" id="hall-price" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Capacity</label>
-                                <input type="number" class="form-control" id="hall-capacity" required>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="hall-description" rows="3" required></textarea>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Amenities</label>
-                                <select class="form-select" id="hall-amenities" multiple>
-                                    <!-- Amenities options will be populated here -->
-                                </select>
-                                <div class="form-text">Hold Ctrl to select multiple amenities</div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Or Add Custom Amenity</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="hall-custom-amenity">
-                                    <button type="button" class="btn btn-outline-secondary" id="add-hall-custom-amenity">Add</button>
+                            <p class="mb-0">Average Rating</p>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-dashboard p-3">
+                            <h5 class="mb-3">Rating Distribution</h5>
+                            <div class="row">
+                                <div class="col-md-2 text-center">
+                                    <h6>5 Stars</h6>
+                                    <h4>65%</h4>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <h6>4 Stars</h6>
+                                    <h4>20%</h4>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: 20%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <h6>3 Stars</h6>
+                                    <h4>8%</h4>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: 8%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <h6>2 Stars</h6>
+                                    <h4>4%</h4>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: 4%"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 text-center">
+                                    <h6>1 Star</h6>
+                                    <h4>3%</h4>
+                                    <div class="progress mb-2" style="height: 10px;">
+                                        <div class="progress-bar bg-warning" style="width: 3%"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Upload Images</label>
-                                <input type="file" class="form-control" id="hall-images" multiple accept="image/*">
-                                <div class="form-text">You can select multiple images</div>
-                                <div id="hall-images-preview" class="mt-2"></div>
-                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="save-hall">Save Hall</button>
+                
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Review ID</th>
+                                <th>Customer</th>
+                                <th>Rating</th>
+                                <th>Comments</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#REV1001</td>
+                                <td>John Smith</td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                </td>
+                                <td>Excellent service and beautiful room. Will definitely come back!</td>
+                                <td>2023-10-21</td>
+                                <td><span class="badge bg-success">Published</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#REV1002</td>
+                                <td>Emily Johnson</td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                    </div>
+                                </td>
+                                <td>Great experience, but the WiFi was a bit slow.</td>
+                                <td>2023-10-19</td>
+                                <td><span class="badge bg-success">Published</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#REV1003</td>
+                                <td>Michael Brown</td>
+                                <td>
+                                    <div>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                        <i class="far fa-star text-warning"></i>
+                                    </div>
+                                </td>
+                                <td>Room was clean but the air conditioning was noisy.</td>
+                                <td>2023-10-18</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                    <button class="btn btn-sm btn-warning"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Edit Room Modal -->
-    <div class="modal fade" id="editRoomModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Room</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <!-- Settings Section -->
+            <div id="settings" class="content-section">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4>System Settings</h4>
+                    <button class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Changes</button>
                 </div>
-                <div class="modal-body">
-                    <form id="edit-room-form">
-                        <input type="hidden" id="edit-room-id">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Room Name</label>
-                                <input type="text" class="form-control" id="edit-room-name" required>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card-dashboard p-4 mb-4">
+                            <h5 class="mb-4">General Settings</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Hotel Name</label>
+                                <input type="text" class="form-control" value="Hotel Infinity">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Room Type</label>
-                                <select class="form-select" id="edit-room-type" required>
-                                    <option value="AC">AC</option>
-                                    <option value="Non-AC">Non-AC</option>
-                                </select>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Email Address</label>
+                                <input type="email" class="form-control" value="info@hotelinfinity.com">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Price (₹)</label>
-                                <input type="number" class="form-control" id="edit-room-price" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" value="+1 (555) 123-4567">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Capacity</label>
-                                <input type="number" class="form-control" id="edit-room-capacity" required>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="edit-room-description" rows="3" required></textarea>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Amenities</label>
-                                <select class="form-select" id="edit-room-amenities" multiple>
-                                    <!-- Amenities options will be populated here -->
-                                </select>
-                                <div class="form-text">Hold Ctrl to select multiple amenities</div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Or Add Custom Amenity</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="edit-room-custom-amenity">
-                                    <button type="button" class="btn btn-outline-secondary" id="add-edit-room-custom-amenity">Add</button>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Current Images</label>
-                                <div id="edit-room-current-images" class="d-flex flex-wrap mb-3"></div>
-                                <label class="form-label">Upload New Images</label>
-                                <input type="file" class="form-control" id="edit-room-images" multiple accept="image/*">
-                                <div class="form-text">You can select multiple images</div>
-                                <div id="edit-room-images-preview" class="mt-2"></div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Address</label>
+                                <textarea class="form-control" rows="2">123 Luxury Avenue, Hospitality City</textarea>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="update-room">Update Room</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Hall Modal -->
-    <div class="modal fade" id="editHallModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Party Hall</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="edit-hall-form">
-                        <input type="hidden" id="edit-hall-id">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Hall Name</label>
-                                <input type="text" class="form-control" id="edit-hall-name" required>
+                        
+                        <div class="card-dashboard p-4 mb-4">
+                            <h5 class="mb-4">Booking Settings</h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Check-In Time</label>
+                                <input type="time" class="form-control" value="14:00">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Price (₹)</label>
-                                <input type="number" class="form-control" id="edit-hall-price" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Check-Out Time</label>
+                                <input type="time" class="form-control" value="12:00">
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Capacity</label>
-                                <input type="number" class="form-control" id="edit-hall-capacity" required>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Cancellation Policy (hours)</label>
+                                <input type="number" class="form-control" value="24">
                             </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="edit-hall-description" rows="3" required></textarea>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Amenities</label>
-                                <select class="form-select" id="edit-hall-amenities" multiple>
-                                    <!-- Amenities options will be populated here -->
-                                </select>
-                                <div class="form-text">Hold Ctrl to select multiple amenities</div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Or Add Custom Amenity</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="edit-hall-custom-amenity">
-                                    <button type="button" class="btn btn-outline-secondary" id="add-edit-hall-custom-amenity">Add</button>
-                                </div>
-                            </div>
-                            <div class="col-12 mb-3">
-                                <label class="form-label">Current Images</label>
-                                <div id="edit-hall-current-images" class="d-flex flex-wrap mb-3"></div>
-                                <label class="form-label">Upload New Images</label>
-                                <input type="file" class="form-control" id="edit-hall-images" multiple accept="image/*">
-                                <div class="form-text">You can select multiple images</div>
-                                <div id="edit-hall-images-preview" class="mt-2"></div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="instantBooking" checked>
+                                <label class="form-check-label" for="instantBooking">Enable Instant Booking</label>
                             </div>
                         </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="update-hall">Update Hall</button>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card-dashboard p-4 mb-4">
+                            <h5 class="mb-4">Payment Settings</h5>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="creditCard" checked>
+                                <label class="form-check-label" for="creditCard">Accept Credit Cards</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="paypal" checked>
+                                <label class="form-check-label" for="paypal">Accept PayPal</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="bankTransfer">
+                                <label class="form-check-label" for="bankTransfer">Accept Bank Transfers</label>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Currency</label>
+                                <select class="form-select">
+                                    <option selected>US Dollar (USD)</option>
+                                    <option>Euro (EUR)</option>
+                                    <option>British Pound (GBP)</option>
+                                    <option>Japanese Yen (JPY)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Tax Rate (%)</label>
+                                <input type="number" class="form-control" value="10">
+                            </div>
+                        </div>
+                        
+                        <div class="card-dashboard p-4 mb-4">
+                            <h5 class="mb-4">Notification Settings</h5>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="emailNotif" checked>
+                                <label class="form-check-label" for="emailNotif">Email Notifications</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="smsNotif">
+                                <label class="form-check-label" for="smsNotif">SMS Notifications</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="newBookingNotif" checked>
+                                <label class="form-check-label" for="newBookingNotif">New Booking Alerts</label>
+                            </div>
+                            
+                            <div class="mb-3 form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="cancelNotif" checked>
+                                <label class="form-check-label" for="cancelNotif">Cancellation Alerts</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -670,951 +999,119 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sample data for demonstration
-        const sampleAmenities = [
-            'Towel', 'Soap', 'Shampoo', 'Electric kettle', 'Tea', 
-            'Coffee', 'Milk powder', 'Sugar pouch', 'Geyser', 'AC', 
-            'TV', 'Wardrobe', 'CCTV', 'Fire extinguisher', 'WiFi', 
-            'Room service', 'Printer & photocopy (chargeable)', 
-            'Indoor games (carrom & chess etc) (chargeable)'
-        ];
-
-        // Initialize data from localStorage or use sample data
-        let amenities = JSON.parse(localStorage.getItem('amenities')) || sampleAmenities;
-        let rooms = JSON.parse(localStorage.getItem('rooms')) || [];
-        let partyHalls = JSON.parse(localStorage.getItem('partyHalls')) || [];
-        let bookings = JSON.parse(localStorage.getItem('bookings')) || [];
-        let payments = JSON.parse(localStorage.getItem('payments')) || [];
-        let reviews = JSON.parse(localStorage.getItem('reviews')) || [];
-        let razorpaySettings = JSON.parse(localStorage.getItem('razorpaySettings')) || { key: '', secret: '' };
-
-        // Fixed admin credentials
-        const adminEmail = "admin@hotelinfinity.com";
-        const adminPassword = "admin123";
-
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAdminLogin();
-            initCharts();
-            setupEventListeners();
-            populateAmenitiesSelect();
-            renderRoomsTable();
-            renderHallsTable();
-            renderBookingsTable();
-            renderPaymentsTable();
-            renderReviewsTable();
-            renderAmenitiesList();
-            updateDashboardStats();
-        });
-
-        // Check if admin is logged in
-        function checkAdminLogin() {
-            const loggedInAdmin = localStorage.getItem('currentAdmin');
-            if (loggedInAdmin) {
+        // Handle login form submission
+        document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Simple validation
+            if (email === 'admin@hotelinfinity.com' && password === 'admin123') {
+                // Hide login and show admin panel
                 document.getElementById('admin-login').style.display = 'none';
                 document.getElementById('admin-panel').style.display = 'block';
+                
+                // Initialize charts
+                initCharts();
             } else {
-                document.getElementById('admin-login').style.display = 'block';
-                document.getElementById('admin-panel').style.display = 'none';
+                const messageDiv = document.getElementById('login-message');
+                messageDiv.textContent = 'Invalid email or password. Please try again.';
+                messageDiv.classList.remove('d-none');
             }
-        }
-
-        // Set up event listeners
-        function setupEventListeners() {
-            // Admin login form submission
-            document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+        });
+        
+        // Handle logout
+        document.getElementById('logout-btn').addEventListener('click', function() {
+            document.getElementById('admin-login').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-login-form').reset();
+        });
+        
+        document.getElementById('dropdown-logout').addEventListener('click', function() {
+            document.getElementById('admin-login').style.display = 'block';
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('admin-login-form').reset();
+        });
+        
+        // Handle navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
                 
-                if (email === adminEmail && password === adminPassword) {
-                    localStorage.setItem('currentAdmin', JSON.stringify({email: adminEmail}));
-                    document.getElementById('admin-login').style.display = 'none';
-                    document.getElementById('admin-panel').style.display = 'block';
-                } else {
-                    alert('Invalid email or password');
-                }
-            });
-
-            // Logout button
-            document.getElementById('logout').addEventListener('click', function(e) {
-                e.preventDefault();
-                localStorage.removeItem('currentAdmin');
-                document.getElementById('admin-panel').style.display = 'none';
-                document.getElementById('admin-login').style.display = 'block';
-                document.getElementById('admin-login-form').reset();
-            });
-
-            // Sidebar navigation
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (this.getAttribute('href').startsWith('#')) {
-                        e.preventDefault();
-                        
-                        // Hide all sections
-                        document.querySelectorAll('.col-md-9 > div').forEach(section => {
-                            section.style.display = 'none';
-                        });
-                        
-                        // Show the target section
-                        const targetId = this.getAttribute('href').substring(1);
-                        document.getElementById(targetId).style.display = 'block';
-                        
-                        // Update active link
-                        document.querySelectorAll('.sidebar a').forEach(a => {
-                            a.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                    }
-                });
-            });
-
-            // Add custom amenity
-            document.getElementById('add-amenity-btn').addEventListener('click', function() {
-                const newAmenity = document.getElementById('new-amenity').value.trim();
-                if (newAmenity && !amenities.includes(newAmenity)) {
-                    amenities.push(newAmenity);
-                    localStorage.setItem('amenities', JSON.stringify(amenities));
-                    renderAmenitiesList();
-                    populateAmenitiesSelect();
-                    document.getElementById('new-amenity').value = '';
-                }
-            });
-
-            // Razorpay settings form
-            document.getElementById('razorpay-settings').addEventListener('submit', function(e) {
-                e.preventDefault();
-                const key = document.getElementById('razorpay-key').value;
-                const secret = document.getElementById('razorpay-secret').value;
+                // Remove active class from all links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
                 
-                razorpaySettings = { key, secret };
-                localStorage.setItem('razorpaySettings', JSON.stringify(razorpaySettings));
-                alert('Razorpay settings saved successfully!');
-            });
-
-            // Room image preview
-            document.getElementById('room-images').addEventListener('change', function() {
-                previewImages(this, 'room-images-preview');
-            });
-
-            // Hall image preview
-            document.getElementById('hall-images').addEventListener('change', function() {
-                previewImages(this, 'hall-images-preview');
-            });
-
-            // Edit room image preview
-            document.getElementById('edit-room-images').addEventListener('change', function() {
-                previewImages(this, 'edit-room-images-preview');
-            });
-
-            // Edit hall image preview
-            document.getElementById('edit-hall-images').addEventListener('change', function() {
-                previewImages(this, 'edit-hall-images-preview');
-            });
-
-            // Save room
-            document.getElementById('save-room').addEventListener('click', function() {
-                const name = document.getElementById('room-name').value;
-                const type = document.getElementById('room-type').value;
-                const price = parseInt(document.getElementById('room-price').value);
-                const capacity = parseInt(document.getElementById('room-capacity').value);
-                const description = document.getElementById('room-description').value;
-                const selectedAmenities = Array.from(document.getElementById('room-amenities').selectedOptions).map(option => option.value);
+                // Add active class to clicked link
+                this.classList.add('active');
                 
-                // In a real application, you would upload images to a server
-                // For this demo, we'll just use placeholder image URLs
-                const imageFiles = document.getElementById('room-images').files;
-                const images = [];
-                
-                if (imageFiles.length > 0) {
-                    for (let i = 0; i < imageFiles.length; i++) {
-                        // In a real app, you would upload and get a URL
-                        // For demo, we'll use a placeholder
-                        images.push(URL.createObjectURL(imageFiles[i]));
-                    }
-                } else {
-                    // Default image if none provided
-                    images.push('https://images.pexels.com/photos/271618/pexels-photo-271618.jpeg?auto=compress&cs=tinysrgb&w=800');
-                }
-                
-                const newRoom = {
-                    id: rooms.length > 0 ? Math.max(...rooms.map(r => r.id)) + 1 : 1,
-                    name,
-                    type,
-                    price,
-                    capacity,
-                    description,
-                    amenities: selectedAmenities,
-                    images,
-                    available: true
-                };
-                
-                rooms.push(newRoom);
-                localStorage.setItem('rooms', JSON.stringify(rooms));
-                
-                renderRoomsTable();
-                updateDashboardStats();
-                document.querySelector('[data-bs-dismiss="modal"]').click();
-                document.getElementById('add-room-form').reset();
-                document.getElementById('room-images-preview').innerHTML = '';
-                
-                alert('Room added successfully!');
-            });
-
-            // Save hall
-            document.getElementById('save-hall').addEventListener('click', function() {
-                const name = document.getElementById('hall-name').value;
-                const price = parseInt(document.getElementById('hall-price').value);
-                const capacity = parseInt(document.getElementById('hall-capacity').value);
-                const description = document.getElementById('hall-description').value;
-                const selectedAmenities = Array.from(document.getElementById('hall-amenities').selectedOptions).map(option => option.value);
-                
-                // In a real application, you would upload images to a server
-                const imageFiles = document.getElementById('hall-images').files;
-                const images = [];
-                
-                if (imageFiles.length > 0) {
-                    for (let i = 0; i < imageFiles.length; i++) {
-                        // In a real app, you would upload and get a URL
-                        images.push(URL.createObjectURL(imageFiles[i]));
-                    }
-                } else {
-                    // Default image if none provided
-                    images.push('https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?auto=compress&cs=tinysrgb&w=800');
-                }
-                
-                const newHall = {
-                    id: partyHalls.length > 0 ? Math.max(...partyHalls.map(h => h.id)) + 1 : 1,
-                    name,
-                    price,
-                    capacity,
-                    description,
-                    amenities: selectedAmenities,
-                    images,
-                    available: true
-                };
-                
-                partyHalls.push(newHall);
-                localStorage.setItem('partyHalls', JSON.stringify(partyHalls));
-                
-                renderHallsTable();
-                updateDashboardStats();
-                document.querySelector('[data-bs-dismiss="modal"]').click();
-                document.getElementById('add-hall-form').reset();
-                document.getElementById('hall-images-preview').innerHTML = '';
-                
-                alert('Hall added successfully!');
-            });
-
-            // Add room custom amenity
-            document.getElementById('add-room-custom-amenity').addEventListener('click', function() {
-                const customAmenity = document.getElementById('room-custom-amenity').value.trim();
-                if (customAmenity) {
-                    if (!amenities.includes(customAmenity)) {
-                        amenities.push(customAmenity);
-                        localStorage.setItem('amenities', JSON.stringify(amenities));
-                        populateAmenitiesSelect();
-                        renderAmenitiesList();
-                    }
-                    
-                    const amenitiesSelect = document.getElementById('room-amenities');
-                    for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                        if (amenitiesSelect.options[i].value === customAmenity) {
-                            amenitiesSelect.options[i].selected = true;
-                            break;
-                        }
-                    }
-                    
-                    document.getElementById('room-custom-amenity').value = '';
-                }
-            });
-
-            // Add hall custom amenity
-            document.getElementById('add-hall-custom-amenity').addEventListener('click', function() {
-                const customAmenity = document.getElementById('hall-custom-amenity').value.trim();
-                if (customAmenity) {
-                    if (!amenities.includes(customAmenity)) {
-                        amenities.push(customAmenity);
-                        localStorage.setItem('amenities', JSON.stringify(amenities));
-                        populateAmenitiesSelect();
-                        renderAmenitiesList();
-                    }
-                    
-                    const amenitiesSelect = document.getElementById('hall-amenities');
-                    for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                        if (amenitiesSelect.options[i].value === customAmenity) {
-                            amenitiesSelect.options[i].selected = true;
-                            break;
-                        }
-                    }
-                    
-                    document.getElementById('hall-custom-amenity').value = '';
-                }
-            });
-        }
-
-        // Preview images before upload
-        function previewImages(input, previewId) {
-            const preview = document.getElementById(previewId);
-            preview.innerHTML = '';
-            
-            if (input.files) {
-                const files = input.files;
-                
-                for (let i = 0; i < files.length; i++) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.classList.add('image-preview');
-                        preview.appendChild(img);
-                    }
-                    
-                    reader.readAsDataURL(files[i]);
-                }
-            }
-        }
-
-        // Populate amenities select in forms
-        function populateAmenitiesSelect() {
-            const roomAmenitiesSelect = document.getElementById('room-amenities');
-            const hallAmenitiesSelect = document.getElementById('hall-amenities');
-            const editRoomAmenitiesSelect = document.getElementById('edit-room-amenities');
-            const editHallAmenitiesSelect = document.getElementById('edit-hall-amenities');
-            
-            [roomAmenitiesSelect, hallAmenitiesSelect, editRoomAmenitiesSelect, editHallAmenitiesSelect].forEach(select => {
-                select.innerHTML = '';
-                
-                amenities.forEach(amenity => {
-                    const option = document.createElement('option');
-                    option.value = amenity;
-                    option.textContent = amenity;
-                    select.appendChild(option);
-                });
-            });
-        }
-
-        // Render amenities list in settings
-        function renderAmenitiesList() {
-            const amenitiesList = document.getElementById('amenities-list');
-            amenitiesList.innerHTML = '';
-            
-            amenities.forEach(amenity => {
-                const amenityElement = document.createElement('div');
-                amenityElement.classList.add('amenity-tag');
-                amenityElement.textContent = amenity;
-                
-                const deleteBtn = document.createElement('button');
-                deleteBtn.classList.add('ms-2', 'btn', 'btn-sm', 'btn-danger');
-                deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
-                deleteBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    amenities = amenities.filter(a => a !== amenity);
-                    localStorage.setItem('amenities', JSON.stringify(amenities));
-                    renderAmenitiesList();
-                    populateAmenitiesSelect();
+                // Hide all sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active-section');
                 });
                 
-                amenityElement.appendChild(deleteBtn);
-                amenitiesList.appendChild(amenityElement);
-            });
-        }
-
-        // Render rooms table
-        function renderRoomsTable() {
-            const tableBody = document.getElementById('rooms-table-body');
-            tableBody.innerHTML = '';
-            
-            rooms.forEach(room => {
-                const row = document.createElement('tr');
+                // Show the selected section
+                const sectionId = this.getAttribute('data-section');
+                document.getElementById(sectionId).classList.add('active-section');
                 
-                row.innerHTML = `
-                    <td>${room.id}</td>
-                    <td><img src="${room.images[0]}" width="50" height="50" style="object-fit: cover;"></td>
-                    <td>${room.name}</td>
-                    <td>${room.type}</td>
-                    <td>₹${room.price}</td>
-                    <td>${room.capacity}</td>
-                    <td>${room.amenities.slice(0, 3).join(', ')}${room.amenities.length > 3 ? '...' : ''}</td>
-                    <td><span class="badge ${room.available ? 'bg-success' : 'bg-danger'}">${room.available ? 'Available' : 'Booked'}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-room" data-id="${room.id}"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-danger delete-room" data-id="${room.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
+                // Update header title
+                document.querySelector('.main-content h3').textContent = 
+                    this.querySelector('.nav-text').textContent;
             });
-            
-            // Add event listeners to edit and delete buttons
-            document.querySelectorAll('.edit-room').forEach(button => {
-                button.addEventListener('click', function() {
-                    const roomId = parseInt(this.getAttribute('data-id'));
-                    editRoom(roomId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-room').forEach(button => {
-                button.addEventListener('click', function() {
-                    const roomId = parseInt(this.getAttribute('data-id'));
-                    deleteRoom(roomId);
-                });
-            });
-        }
-
-        // Render halls table
-        function renderHallsTable() {
-            const tableBody = document.getElementById('halls-table-body');
-            tableBody.innerHTML = '';
-            
-            partyHalls.forEach(hall => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${hall.id}</td>
-                    <td><img src="${hall.images[0]}" width="50" height="50" style="object-fit: cover;"></td>
-                    <td>${hall.name}</td>
-                    <td>₹${hall.price}</td>
-                    <td>${hall.capacity}</td>
-                    <td>${hall.amenities.slice(0, 3).join(', ')}${hall.amenities.length > 3 ? '...' : ''}</td>
-                    <td><span class="badge ${hall.available ? 'bg-success' : 'bg-danger'}">${hall.available ? 'Available' : 'Booked'}</span></td>
-                    <td>
-                        <button class="btn btn-sm btn-primary edit-hall" data-id="${hall.id}"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-danger delete-hall" data-id="${hall.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-            
-            // Add event listeners to edit and delete buttons
-            document.querySelectorAll('.edit-hall').forEach(button => {
-                button.addEventListener('click', function() {
-                    const hallId = parseInt(this.getAttribute('data-id'));
-                    editHall(hallId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-hall').forEach(button => {
-                button.addEventListener('click', function() {
-                    const hallId = parseInt(this.getAttribute('data-id'));
-                    deleteHall(hallId);
-                });
-            });
-        }
-
-        // Render bookings table
-        function renderBookingsTable() {
-            const tableBody = document.getElementById('bookings-table-body');
-            tableBody.innerHTML = '';
-            
-            bookings.forEach(booking => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${booking.id}</td>
-                    <td>${booking.customerName}</td>
-                    <td>${booking.type}</td>
-                    <td>${booking.itemName}</td>
-                    <td>${booking.checkIn}</td>
-                    <td>${booking.checkOut}</td>
-                    <td>₹${booking.amount}</td>
-                    <td><span class="badge ${booking.status === 'confirmed' ? 'bg-success' : booking.status === 'pending' ? 'bg-warning' : 'bg-danger'}">${booking.status}</span></td>
-                    <td>
-                        ${booking.status === 'pending' ? `
-                            <button class="btn btn-sm btn-success confirm-booking" data-id="${booking.id}"><i class="fas fa-check"></i></button>
-                            <button class="btn btn-sm btn-danger reject-booking" data-id="${booking.id}"><i class="fas fa-times"></i></button>
-                        ` : ''}
-                        <button class="btn btn-sm btn-info view-booking" data-id="${booking.id}"><i class="fas fa-eye"></i></button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-            
-            // Add event listeners to action buttons
-            document.querySelectorAll('.confirm-booking').forEach(button => {
-                button.addEventListener('click', function() {
-                    const bookingId = parseInt(this.getAttribute('data-id'));
-                    updateBookingStatus(bookingId, 'confirmed');
-                });
-            });
-            
-            document.querySelectorAll('.reject-booking').forEach(button => {
-                button.addEventListener('click', function() {
-                    const bookingId = parseInt(this.getAttribute('data-id'));
-                    updateBookingStatus(bookingId, 'cancelled');
-                });
-            });
-        }
-
-        // Render payments table
-        function renderPaymentsTable() {
-            const tableBody = document.getElementById('payments-table-body');
-            tableBody.innerHTML = '';
-            
-            payments.forEach(payment => {
-                const row = document.createElement('tr');
-                
-                row.innerHTML = `
-                    <td>${payment.id}</td>
-                    <td>${payment.bookingId}</td>
-                    <td>${payment.customerName}</td>
-                    <td>₹${payment.amount}</td>
-                    <td>${payment.date}</td>
-                    <td>${payment.method}</td>
-                    <td><span class="badge ${payment.status === 'success' ? 'bg-success' : 'bg-danger'}">${payment.status}</span></td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-        }
-
-        // Render reviews table
-        function renderReviewsTable() {
-            const tableBody = document.getElementById('reviews-table-body');
-            tableBody.innerHTML = '';
-            
-            reviews.forEach(review => {
-                const row = document.createElement('tr');
-                
-                // Generate star rating HTML
-                let stars = '';
-                for (let i = 1; i <= 5; i++) {
-                    stars += i <= review.rating ? '<i class="fas fa-star text-warning"></i>' : '<i class="far fa-star text-warning"></i>';
-                }
-                
-                row.innerHTML = `
-                    <td>${review.id}</td>
-                    <td>${review.guestName}</td>
-                    <td>${stars}</td>
-                    <td>${review.comment.length > 50 ? review.comment.substring(0, 50) + '...' : review.comment}</td>
-                    <td>${review.date}</td>
-                    <td><span class="badge ${review.approved ? 'bg-success' : 'bg-warning'}">${review.approved ? 'Approved' : 'Pending'}</span></td>
-                    <td>
-                        ${!review.approved ? `
-                            <button class="btn btn-sm btn-success approve-review" data-id="${review.id}"><i class="fas fa-check"></i></button>
-                        ` : ''}
-                        <button class="btn btn-sm btn-danger delete-review" data-id="${review.id}"><i class="fas fa-trash"></i></button>
-                    </td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
-            
-            // Add event listeners to action buttons
-            document.querySelectorAll('.approve-review').forEach(button => {
-                button.addEventListener('click', function() {
-                    const reviewId = parseInt(this.getAttribute('data-id'));
-                    approveReview(reviewId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-review').forEach(button => {
-                button.addEventListener('click', function() {
-                    const reviewId = parseInt(this.getAttribute('data-id'));
-                    deleteReview(reviewId);
-                });
-            });
-        }
-
-        // Edit room
-        function editRoom(roomId) {
-            const room = rooms.find(r => r.id === roomId);
-            if (!room) return;
-            
-            document.getElementById('edit-room-id').value = room.id;
-            document.getElementById('edit-room-name').value = room.name;
-            document.getElementById('edit-room-type').value = room.type;
-            document.getElementById('edit-room-price').value = room.price;
-            document.getElementById('edit-room-capacity').value = room.capacity;
-            document.getElementById('edit-room-description').value = room.description;
-            
-            // Select amenities
-            const amenitiesSelect = document.getElementById('edit-room-amenities');
-            for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                amenitiesSelect.options[i].selected = room.amenities.includes(amenitiesSelect.options[i].value);
-            }
-            
-            // Show current images
-            const currentImagesContainer = document.getElementById('edit-room-current-images');
-            currentImagesContainer.innerHTML = '';
-            
-            room.images.forEach(image => {
-                const img = document.createElement('img');
-                img.src = image;
-                img.classList.add('image-preview');
-                currentImagesContainer.appendChild(img);
-            });
-            
-            // Clear image preview
-            document.getElementById('edit-room-images-preview').innerHTML = '';
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('editRoomModal'));
-            modal.show();
-            
-            // Add event listener to update button
-            document.getElementById('update-room').onclick = function() {
-                updateRoom(roomId);
-            };
-            
-            // Add event listener for custom amenity
-            document.getElementById('add-edit-room-custom-amenity').onclick = function() {
-                const customAmenity = document.getElementById('edit-room-custom-amenity').value.trim();
-                if (customAmenity) {
-                    if (!amenities.includes(customAmenity)) {
-                        amenities.push(customAmenity);
-                        localStorage.setItem('amenities', JSON.stringify(amenities));
-                        populateAmenitiesSelect();
-                        renderAmenitiesList();
-                    }
-                    
-                    const amenitiesSelect = document.getElementById('edit-room-amenities');
-                    for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                        if (amenitiesSelect.options[i].value === customAmenity) {
-                            amenitiesSelect.options[i].selected = true;
-                            break;
-                        }
-                    }
-                    
-                    document.getElementById('edit-room-custom-amenity').value = '';
-                }
-            };
-        }
-
-        // Update room
-        function updateRoom(roomId) {
-            const roomIndex = rooms.findIndex(r => r.id === roomId);
-            if (roomIndex === -1) return;
-            
-            const name = document.getElementById('edit-room-name').value;
-            const type = document.getElementById('edit-room-type').value;
-            const price = parseInt(document.getElementById('edit-room-price').value);
-            const capacity = parseInt(document.getElementById('edit-room-capacity').value);
-            const description = document.getElementById('edit-room-description').value;
-            const selectedAmenities = Array.from(document.getElementById('edit-room-amenities').selectedOptions).map(option => option.value);
-            
-            // Handle new images
-            const imageFiles = document.getElementById('edit-room-images').files;
-            let images = [...rooms[roomIndex].images];
-            
-            if (imageFiles.length > 0) {
-                for (let i = 0; i < imageFiles.length; i++) {
-                    // In a real app, you would upload and get a URL
-                    images.push(URL.createObjectURL(imageFiles[i]));
-                }
-            }
-            
-            rooms[roomIndex] = {
-                ...rooms[roomIndex],
-                name,
-                type,
-                price,
-                capacity,
-                description,
-                amenities: selectedAmenities,
-                images
-            };
-            
-            localStorage.setItem('rooms', JSON.stringify(rooms));
-            renderRoomsTable();
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editRoomModal'));
-            modal.hide();
-            
-            alert('Room updated successfully!');
-        }
-
-        // Delete room
-        function deleteRoom(roomId) {
-            if (confirm('Are you sure you want to delete this room?')) {
-                rooms = rooms.filter(r => r.id !== roomId);
-                localStorage.setItem('rooms', JSON.stringify(rooms));
-                renderRoomsTable();
-                updateDashboardStats();
-                alert('Room deleted successfully!');
-            }
-        }
-
-        // Edit hall
-        function editHall(hallId) {
-            const hall = partyHalls.find(h => h.id === hallId);
-            if (!hall) return;
-            
-            document.getElementById('edit-hall-id').value = hall.id;
-            document.getElementById('edit-hall-name').value = hall.name;
-            document.getElementById('edit-hall-price').value = hall.price;
-            document.getElementById('edit-hall-capacity').value = hall.capacity;
-            document.getElementById('edit-hall-description').value = hall.description;
-            
-            // Select amenities
-            const amenitiesSelect = document.getElementById('edit-hall-amenities');
-            for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                amenitiesSelect.options[i].selected = hall.amenities.includes(amenitiesSelect.options[i].value);
-            }
-            
-            // Show current images
-            const currentImagesContainer = document.getElementById('edit-hall-current-images');
-            currentImagesContainer.innerHTML = '';
-            
-            hall.images.forEach(image => {
-                const img = document.createElement('img');
-                img.src = image;
-                img.classList.add('image-preview');
-                currentImagesContainer.appendChild(img);
-            });
-            
-            // Clear image preview
-            document.getElementById('edit-hall-images-preview').innerHTML = '';
-            
-            // Show modal
-            const modal = new bootstrap.Modal(document.getElementById('editHallModal'));
-            modal.show();
-            
-            // Add event listener to update button
-            document.getElementById('update-hall').onclick = function() {
-                updateHall(hallId);
-            };
-            
-            // Add event listener for custom amenity
-            document.getElementById('add-edit-hall-custom-amenity').onclick = function() {
-                const customAmenity = document.getElementById('edit-hall-custom-amenity').value.trim();
-                if (customAmenity) {
-                    if (!amenities.includes(customAmenity)) {
-                        amenities.push(customAmenity);
-                        localStorage.setItem('amenities', JSON.stringify(amenities));
-                        populateAmenitiesSelect();
-                        renderAmenitiesList();
-                    }
-                    
-                    const amenitiesSelect = document.getElementById('edit-hall-amenities');
-                    for (let i = 0; i < amenitiesSelect.options.length; i++) {
-                        if (amenitiesSelect.options[i].value === customAmenity) {
-                            amenitiesSelect.options[i].selected = true;
-                            break;
-                        }
-                    }
-                    
-                    document.getElementById('edit-hall-custom-amenity').value = '';
-                }
-            };
-        }
-
-        // Update hall
-        function updateHall(hallId) {
-            const hallIndex = partyHalls.findIndex(h => h.id === hallId);
-            if (hallIndex === -1) return;
-            
-            const name = document.getElementById('edit-hall-name').value;
-            const price = parseInt(document.getElementById('edit-hall-price').value);
-            const capacity = parseInt(document.getElementById('edit-hall-capacity').value);
-            const description = document.getElementById('edit-hall-description').value;
-            const selectedAmenities = Array.from(document.getElementById('edit-hall-amenities').selectedOptions).map(option => option.value);
-            
-            // Handle new images
-            const imageFiles = document.getElementById('edit-hall-images').files;
-            let images = [...partyHalls[hallIndex].images];
-            
-            if (imageFiles.length > 0) {
-                for (let i = 0; i < imageFiles.length; i++) {
-                    // In a real app, you would upload and get a URL
-                    images.push(URL.createObjectURL(imageFiles[i]));
-                }
-            }
-            
-            partyHalls[hallIndex] = {
-                ...partyHalls[hallIndex],
-                name,
-                price,
-                capacity,
-                description,
-                amenities: selectedAmenities,
-                images
-            };
-            
-            localStorage.setItem('partyHalls', JSON.stringify(partyHalls));
-            renderHallsTable();
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('editHallModal'));
-            modal.hide();
-            
-            alert('Hall updated successfully!');
-        }
-
-        // Delete hall
-        function deleteHall(hallId) {
-            if (confirm('Are you sure you want to delete this hall?')) {
-                partyHalls = partyHalls.filter(h => h.id !== hallId);
-                localStorage.setItem('partyHalls', JSON.stringify(partyHalls));
-                renderHallsTable();
-                updateDashboardStats();
-                alert('Hall deleted successfully!');
-            }
-        }
-
-        // Update booking status
-        function updateBookingStatus(bookingId, status) {
-            const bookingIndex = bookings.findIndex(b => b.id === bookingId);
-            if (bookingIndex === -1) return;
-            
-            bookings[bookingIndex].status = status;
-            localStorage.setItem('bookings', JSON.stringify(bookings));
-            renderBookingsTable();
-            
-            // If confirmed, mark the room/hall as booked
-            if (status === 'confirmed') {
-                const booking = bookings[bookingIndex];
-                if (booking.type === 'room') {
-                    const roomIndex = rooms.findIndex(r => r.id === booking.itemId);
-                    if (roomIndex !== -1) {
-                        rooms[roomIndex].available = false;
-                        localStorage.setItem('rooms', JSON.stringify(rooms));
-                        renderRoomsTable();
-                    }
-                } else {
-                    const hallIndex = partyHalls.findIndex(h => h.id === booking.itemId);
-                    if (hallIndex !== -1) {
-                        partyHalls[hallIndex].available = false;
-                        localStorage.setItem('partyHalls', JSON.stringify(partyHalls));
-                        renderHallsTable();
-                    }
-                }
-            }
-            
-            alert(`Booking ${status} successfully!`);
-        }
-
-        // Approve review
-        function approveReview(reviewId) {
-            const reviewIndex = reviews.findIndex(r => r.id === reviewId);
-            if (reviewIndex === -1) return;
-            
-            reviews[reviewIndex].approved = true;
-            localStorage.setItem('reviews', JSON.stringify(reviews));
-            renderReviewsTable();
-            alert('Review approved successfully!');
-        }
-
-        // Delete review
-        function deleteReview(reviewId) {
-            if (confirm('Are you sure you want to delete this review?')) {
-                reviews = reviews.filter(r => r.id !== reviewId);
-                localStorage.setItem('reviews', JSON.stringify(reviews));
-                renderReviewsTable();
-                alert('Review deleted successfully!');
-            }
-        }
-
-        // Update dashboard statistics
-        function updateDashboardStats() {
-            document.getElementById('total-rooms').textContent = rooms.length;
-            document.getElementById('total-halls').textContent = partyHalls.length;
-            document.getElementById('total-bookings').textContent = bookings.length;
-            
-            const totalRevenue = bookings.reduce((sum, booking) => {
-                return booking.status === 'confirmed' ? sum + booking.amount : sum;
-            }, 0);
-            
-            document.getElementById('total-revenue').textContent = `₹${totalRevenue}`;
-        }
-
-        // Initialize charts in admin panel
+        });
+        
+        // Initialize charts
         function initCharts() {
-            // Booking Statistics Chart
-            const bookingCtx = document.getElementById('bookingChart').getContext('2d');
-            const bookingChart = new Chart(bookingCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                    datasets: [{
-                        label: 'Room Bookings',
-                        data: [12, 19, 15, 17, 22, 18, 25, 28, 22, 25, 20, 23],
-                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }, {
-                        label: 'Hall Bookings',
-                        data: [5, 8, 6, 9, 10, 7, 12, 14, 11, 13, 10, 12],
-                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Revenue Sources Chart
+            // Revenue Chart
             const revenueCtx = document.getElementById('revenueChart').getContext('2d');
             const revenueChart = new Chart(revenueCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['AC Rooms', 'Non-AC Rooms', 'Party Halls', 'Additional Services'],
-                    datasets: [{
-                        data: [45, 25, 20, 10],
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(255, 99, 132, 0.8)',
-                            'rgba(255, 205, 86, 0.8)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Customer Ratings Chart
-            const ratingsCtx = document.getElementById('ratingsChart').getContext('2d');
-            const ratingsChart = new Chart(ratingsCtx, {
-                type: 'polarArea',
-                data: {
-                    labels: ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'],
-                    datasets: [{
-                        data: [45, 25, 15, 10, 5],
-                        backgroundColor: [
-                            'rgba(54, 162, 235, 0.8)',
-                            'rgba(75, 192, 192, 0.8)',
-                            'rgba(255, 205, 86, 0.8)',
-                            'rgba(255, 159, 64, 0.8)',
-                            'rgba(255, 99, 132, 0.8)'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Customer Acquisition Chart
-            const acquisitionCtx = document.getElementById('acquisitionChart').getContext('2d');
-            const acquisitionChart = new Chart(acquisitionCtx, {
                 type: 'line',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                     datasets: [{
-                        label: 'New Customers',
-                        data: [30, 45, 35, 50, 55, 40, 65, 70, 60, 75, 65, 80],
-                        fill: false,
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        tension: 0.1
+                        label: 'Revenue ($)',
+                        data: [8500, 9200, 10100, 11300, 10500, 11500, 12000, 11800, 12500, 13000, 12600, 13500],
+                        borderColor: '#3282b8',
+                        backgroundColor: 'rgba(50, 130, 184, 0.1)',
+                        fill: true,
+                        tension: 0.4
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Monthly Revenue'
+                        }
+                    }
+                }
+            });
+            
+            // Occupancy Chart
+            const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+            const occupancyChart = new Chart(occupancyCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Occupied', 'Available', 'Maintenance'],
+                    datasets: [{
+                        data: [78, 18, 4],
+                        backgroundColor: [
+                            '#3282b8',
+                            '#bbe1fa',
+                            '#1b262c'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Current Room Status'
                         }
                     }
                 }
