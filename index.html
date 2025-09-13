@@ -3,614 +3,1151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Infinity - Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Hotel Infinity - Luxury Redefined</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         :root {
-            --primary: #0f4c75;
-            --secondary: #3282b8;
-            --accent: #bbe1fa;
-            --dark: #1b262c;
+            --primary: #0a3d62;
+            --secondary: #f9c74f;
+            --accent: #f3722c;
             --light: #f8f9fa;
+            --dark: #2d3436;
+            --success: #2ecc71;
+            --danger: #e74c3c;
         }
-
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%);
-            min-height: 100vh;
+            color: var(--dark);
+            background-color: #f8f9fa;
+            overflow-x: hidden;
+        }
+        
+        h1, h2, h3, h4, h5 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+        }
+        
+        /* Header & Navigation */
+        header {
+            background: linear-gradient(to right, var(--primary), #1e5799);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
         }
-
-        .admin-panel {
-            background: #f5f7f9;
-            min-height: 100vh;
-            width: 100%;
-            display: none;
+        
+        .logo i {
+            margin-right: 10px;
+            color: var(--secondary);
         }
-
-        .sidebar {
-            background: var(--dark);
-            color: white;
-            min-height: 100vh;
-            transition: all 0.3s ease;
+        
+        nav ul {
+            display: flex;
+            list-style: none;
         }
-
-        .sidebar a {
-            color: rgba(255, 255, 255, 0.8);
-            padding: 15px 20px;
-            display: block;
-            transition: all 0.3s ease;
+        
+        nav ul li {
+            margin-left: 2rem;
         }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background: var(--primary);
+        
+        nav ul li a {
             color: white;
             text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            position: relative;
         }
-
-        .chart-container {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        
+        nav ul li a:after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--secondary);
+            transition: width 0.3s;
         }
-
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+        
+        nav ul li a:hover {
+            color: var(--secondary);
+        }
+        
+        nav ul li a:hover:after {
             width: 100%;
-            max-width: 400px;
         }
-
-        .login-header {
-            background: var(--primary);
+        
+        .auth-buttons button {
+            background: var(--secondary);
+            color: var(--primary);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .auth-buttons button:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            background: linear-gradient(rgba(10, 61, 98, 0.7), rgba(10, 61, 98, 0.7)), url('https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 25px;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
             text-align: center;
         }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
+        
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: fadeInDown 1s ease;
         }
-
-        .btn-primary:hover {
-            background: var(--secondary);
+        
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease;
         }
-
-        .image-preview {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .current-image-container {
-            position: relative;
-            display: inline-block;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-
-        .current-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .delete-image-btn {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: #dc3545;
+        
+        .cta-button {
+            background: var(--accent);
             color: white;
             border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s;
+            animation: pulse 2s infinite;
         }
-
-        .amenity-tag {
-            display: inline-block;
-            background: var(--accent);
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin: 5px;
-            font-size: 0.8rem;
+        
+        .cta-button:hover {
+            background: #e25a28;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
-
-        .table-responsive {
-            overflow-x: auto;
+        
+        /* 3D Animation Canvas */
+        #animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
-
-        .selected-amenities {
+        
+        /* Rooms Section */
+        .section-title {
+            text-align: center;
+            margin: 4rem 0 2rem;
+            color: var(--primary);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 3px;
+            background: var(--secondary);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .rooms-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .room-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .room-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .room-image {
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .room-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+        
+        .room-card:hover .room-image img {
+            transform: scale(1.1);
+        }
+        
+        .room-details {
+            padding: 1.5rem;
+        }
+        
+        .room-details h3 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .room-price {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0.5rem 0;
+        }
+        
+        .room-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
+            margin: 1rem 0;
         }
-
-        .amenity-badge {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e2e8f0;
-            padding: 4px 8px;
-            border-radius: 16px;
-            font-size: 14px;
+        
+        .room-features span {
+            background: #f1f2f6;
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
         }
-
-        .amenity-badge .remove {
-            margin-left: 6px;
+        
+        .book-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
-            color: #718096;
+            transition: all 0.3s;
+            width: 100%;
         }
-
-        .amenity-badge .remove:hover {
-            color: #e53e3e;
+        
+        .book-button:hover {
+            background: var(--secondary);
+            color: var(--primary);
         }
-
-        .loading-overlay {
+        
+        /* Party Halls Section */
+        .party-halls {
+            background: #f1f2f6;
+            padding: 4rem 0;
+        }
+        
+        /* Reviews Section */
+        .reviews-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .review-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .review-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .review-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+        
+        .review-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .review-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .review-stars {
+            color: var(--secondary);
+            margin: 0.5rem 0;
+        }
+        
+        /* Booking Modal */
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            overflow-y: auto;
         }
         
-        .password-toggle {
-            cursor: pointer;
+        .modal-content {
             background: white;
-            border: 2px solid #e2e8f0;
-            border-left: none;
-            border-radius: 0 8px 8px 0;
+            width: 90%;
+            max-width: 600px;
+            margin: 2rem auto;
+            border-radius: 10px;
+            padding: 2rem;
+            position: relative;
+            animation: modalFadeIn 0.3s;
         }
         
-        .hotel-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: var(--accent);
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark);
+        }
+        
+        .booking-form {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .amenities-select {
+            height: 120px;
+        }
+        
+        /* Payment Section */
+        .payment-container {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+        
+        .payment-details {
+            margin: 1rem 0;
+        }
+        
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .payment-total {
+            font-weight: 600;
+            font-size: 1.2rem;
+            border-top: 1px solid #ddd;
+            padding-top: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .razorpay-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+        
+        .razorpay-button:hover {
+            background: #0a3d62;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+        
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        
+        .footer-section p, .footer-section li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: var(--secondary);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+        
+        .social-icons a:hover {
+            background: var(--secondary);
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0.5rem 1rem;
+            }
+            
+            .auth-buttons {
+                margin-top: 1rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .rooms-container, .reviews-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-
 <body>
-    <!-- Loading Overlay -->
-    <div id="loading-overlay" class="loading-overlay" style="display: none;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-infinity"></i>
+                Hotel Infinity
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#rooms">Rooms</a></li>
+                    <li><a href="#halls">Party Halls</a></li>
+                    <li><a href="#amenities">Amenities</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="auth-buttons">
+                <button id="admin-login-btn">Admin Login</button>
+            </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Admin Login -->
-    <div id="admin-login">
-        <div class="login-container">
-            <div class="login-header">
-                <div class="hotel-icon">
-                    <i class="fas fa-hotel"></i>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div id="animation-container"></div>
+        <div class="hero-content">
+            <h1>Experience Luxury Redefined</h1>
+            <p>Your perfect getaway at Hotel Infinity</p>
+            <button class="cta-button" id="book-now-btn">Book Now</button>
+        </div>
+    </section>
+
+    <!-- Rooms Section -->
+    <section id="rooms">
+        <h2 class="section-title">Our Rooms</h2>
+        <div class="rooms-container">
+            <!-- Room cards will be dynamically loaded from database -->
+            <div class="room-card">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1611892440504-42a792e24d32?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Deluxe AC Room">
                 </div>
-                <h2>Hotel Infinity</h2>
-                <p>Admin Portal</p>
+                <div class="room-details">
+                    <h3>Deluxe AC Room</h3>
+                    <div class="room-price">₹3,500 / night</div>
+                    <div class="room-features">
+                        <span>AC</span>
+                        <span>TV</span>
+                        <span>WiFi</span>
+                        <span>Geyser</span>
+                    </div>
+                    <button class="book-button" data-type="room" data-id="1">Book Now</button>
+                </div>
             </div>
             
-            <div class="p-4">
-                <div id="login-error" class="alert alert-danger mt-3" style="display: none;"></div>
-                
-                <form id="admin-login-form">
-                    <div class="mb-3">
-                        <label class="form-label">Email Address</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                            <input type="email" class="form-control" id="login-email" placeholder="admin@hotelinfinity.com" required>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <div class="input-group">
-                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
-                            <input type="password" class="form-control" id="login-password" placeholder="Enter your password" required>
-                            <span class="input-group-text password-toggle" id="password-toggle">
-                                <i class="fas fa-eye"></i>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">Remember me</label>
-                    </div>
-                    
-                    <button type="submit" class="btn btn-primary w-100 mb-3">
-                        <i class="fas fa-sign-in-alt me-2"></i>Login
-                    </button>
-                </form>
-                
-                <div class="text-center">
-                    <a href="#" id="forgot-password">Forgot Password?</a>
+            <div class="room-card">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Non AC Room">
                 </div>
+                <div class="room-details">
+                    <h3>Non AC Room</h3>
+                    <div class="room-price">₹2,000 / night</div>
+                    <div class="room-features">
+                        <span>Fan</span>
+                        <span>TV</span>
+                        <span>WiFi</span>
+                        <span>Geyser</span>
+                    </div>
+                    <button class="book-button" data-type="room" data-id="2">Book Now</button>
+                </div>
+            </div>
+            
+            <div class="room-card">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1584134964285-2aef5ffc8c78?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Premium Suite">
+                </div>
+                <div class="room-details">
+                    <h3>Premium Suite</h3>
+                    <div class="room-price">₹6,000 / night</div>
+                    <div class="room-features">
+                        <span>AC</span>
+                        <span>TV</span>
+                        <span>WiFi</span>
+                        <span>Jacuzzi</span>
+                        <span>Minibar</span>
+                    </div>
+                    <button class="book-button" data-type="room" data-id="3">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Party Halls Section -->
+    <section class="party-halls" id="halls">
+        <h2 class="section-title">Party Halls</h2>
+        <div class="rooms-container">
+            <!-- Party hall cards will be dynamically loaded from database -->
+            <div class="room-card">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Grand Ballroom">
+                </div>
+                <div class="room-details">
+                    <h3>Grand Ballroom</h3>
+                    <div class="room-price">₹25,000 / event</div>
+                    <div class="room-features">
+                        <span>Capacity: 200</span>
+                        <span>Sound System</span>
+                        <span>Stage</span>
+                        <span>Lighting</span>
+                    </div>
+                    <button class="book-button" data-type="hall" data-id="1">Book Now</button>
+                </div>
+            </div>
+            
+            <div class="room-card">
+                <div class="room-image">
+                    <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Conference Hall">
+                </div>
+                <div class="room-details">
+                    <h3>Conference Hall</h3>
+                    <div class="room-price">₹15,000 / event</div>
+                    <div class="room-features">
+                        <span>Capacity: 100</span>
+                        <span>Projector</span>
+                        <span>WiFi</span>
+                        <span>Catering</span>
+                    </div>
+                    <button class="book-button" data-type="hall" data-id="2">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews Section -->
+    <section id="reviews">
+        <h2 class="section-title">Guest Reviews</h2>
+        <div class="reviews-container">
+            <!-- Reviews will be dynamically loaded from database -->
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Doe">
+                    </div>
+                    <div>
+                        <div class="review-name">John Doe</div>
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p>"The stay was amazing! The AC room was spacious and clean. The staff was very helpful. Will definitely come back again."</p>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Jane Smith">
+                    </div>
+                    <div>
+                        <div class="review-name">Jane Smith</div>
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                    </div>
+                </div>
+                <p>"We hosted our company party in the Grand Ballroom. The experience was fantastic! The amenities were top-notch."</p>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="review-avatar">
+                        <img src="https://randomuser.me/api/portraits/men/62.jpg" alt="Robert Brown">
+                    </div>
+                    <div>
+                        <div class="review-name">Robert Brown</div>
+                        <div class="review-stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <p>"Good value for money. The non-AC rooms are comfortable for budget stays. The food was delicious too."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Booking Modal -->
+    <div class="modal" id="booking-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Book Your Stay</h2>
+            <form class="booking-form" id="booking-form">
+                <input type="hidden" id="booking-type" value="">
+                <input type="hidden" id="booking-id" value="">
+                
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="check-in">Check-in Date</label>
+                    <input type="date" id="check-in" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="check-out">Check-out Date</label>
+                    <input type="date" id="check-out" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="guests">Number of Guests</label>
+                    <input type="number" id="guests" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amenities">Select Amenities</label>
+                    <select multiple class="amenities-select" id="amenities">
+                        <option value="Towel">Towel</option>
+                        <option value="Soap">Soap</option>
+                        <option value="Shampoo">Shampoo</option>
+                        <option value="Electric kettle">Electric kettle</option>
+                        <option value="Tea">Tea</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Milk powder">Milk powder</option>
+                        <option value="Sugar pouch">Sugar pouch</option>
+                        <option value="Geyser">Geyser</option>
+                        <option value="AC">AC</option>
+                        <option value="TV">TV</option>
+                        <option value="Wardrobe">Wardrobe</option>
+                        <option value="CCTV">CCTV</option>
+                        <option value="Fire extinguisher">Fire extinguisher</option>
+                        <option value="WiFi">WiFi</option>
+                        <option value="Room service">Room service</option>
+                        <option value="Printer & photocopy (chargeable)">Printer & photocopy (chargeable)</option>
+                        <option value="Indoor games (carrom & chess etc) (chargeable)">Indoor games (carrom & chess etc) (chargeable)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="special-requests">Special Requests</label>
+                    <textarea id="special-requests" rows="3"></textarea>
+                </div>
+                
+                <button type="submit" class="book-button">Proceed to Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal" id="payment-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Payment</h2>
+            <div class="payment-container">
+                <h3>Booking Summary</h3>
+                <div class="payment-details">
+                    <div class="payment-item">
+                        <span>Room Charges (3 nights)</span>
+                        <span>₹10,500</span>
+                    </div>
+                    <div class="payment-item">
+                        <span>Taxes & Fees</span>
+                        <span>₹1,575</span>
+                    </div>
+                    <div class="payment-item payment-total">
+                        <span>Total</span>
+                        <span>₹12,075</span>
+                    </div>
+                </div>
+                <button class="razorpay-button" id="rzp-button">Pay with Razorpay</button>
             </div>
         </div>
     </div>
 
-    <!-- Admin Panel -->
-    <div id="admin-panel" class="container-fluid">
-        <div class="row">
-            <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 sidebar p-0">
-                <div class="p-4">
-                    <h5 class="text-white fw-bold mb-4">Hotel Infinity Admin</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="#dashboard" class="active"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-                        </li>
-                        <li><a href="#manage-rooms"><i class="fas fa-bed me-2"></i> Manage Rooms</a></li>
-                        <li><a href="#manage-halls"><i class="fas fa-building me-2"></i> Manage Party Halls</a></li>
-                        <li><a href="#manage-bookings"><i class="fas fa-calendar-check me-2"></i> Bookings</a></li>
-                        <li><a href="#manage-payments"><i class="fas fa-credit-card me-2"></i> Payments</a></li>
-                        <li><a href="#manage-reviews"><i class="fas fa-star me-2"></i> Reviews</a></li>
-                        <li><a href="#settings"><i class="fas fa-cog me-2"></i> Settings</a></li>
-                        <li><a href="#" id="logout"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Main Content -->
-            <div class="col-md-9 col-lg-10 ml-sm-auto px-4 py-4">
-                <!-- Dashboard Section -->
-                <div id="dashboard">
-                    <h2 class="fw-bold mb-4">Dashboard</h2>
-                    <div class="row mb-4">
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-primary text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Rooms</h5>
-                                    <h2 class="fw-bold" id="total-rooms">24</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-success text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Halls</h5>
-                                    <h2 class="fw-bold" id="total-halls">8</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-info text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Bookings</h5>
-                                    <h2 class="fw-bold" id="total-bookings">156</h2>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="card bg-warning text-white">
-                                <div class="card-body">
-                                    <h5 class="card-title">Total Revenue</h5>
-                                    <h2 class="fw-bold" id="total-revenue">₹2,45,800</h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Booking Statistics</h5>
-                                <canvas id="bookingChart" height="250"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Revenue Sources</h5>
-                                <canvas id="revenueChart" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Customer Ratings</h5>
-                                <canvas id="ratingsChart" height="250"></canvas>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="chart-container">
-                                <h5 class="fw-bold mb-3">Customer Acquisition</h5>
-                                <canvas id="acquisitionChart" height="250"></canvas>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Other sections would be here but hidden by default -->
-                <div id="manage-rooms" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Rooms</h2>
-                    <div class="alert alert-info">
-                        Room management interface would be here.
-                    </div>
+    <!-- Admin Login Modal -->
+    <div class="modal" id="admin-login-modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Admin Login</h2>
+            <form class="booking-form" id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-email">Email</label>
+                    <input type="email" id="admin-email" required>
                 </div>
                 
-                <div id="manage-halls" style="display: none;">
-                    <h2 class="fw-bold mb-4">Manage Party Halls</h2>
-                    <div class="alert alert-info">
-                        Hall management interface would be here.
-                    </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" required>
                 </div>
                 
-                <!-- Additional sections would follow the same pattern -->
-                
-            </div>
+                <button type="submit" class="book-button">Login</button>
+            </form>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Hotel Infinity</h3>
+                <p>Experience luxury and comfort like never before. Our hotel offers the perfect blend of modern amenities and traditional hospitality.</p>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Contact Info</h3>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Luxury Street, Mumbai, India</p>
+                <p><i class="fas fa-phone"></i> +91 98765 43210</p>
+                <p><i class="fas fa-envelope"></i> info@hotelinfinity.com</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#rooms">Rooms</a></li>
+                    <li><a href="#halls">Party Halls</a></li>
+                    <li><a href="#amenities">Amenities</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>&copy; 2023 Hotel Infinity. All rights reserved.</p>
+        </div>
+    </footer>
+
     <script>
-        // Initialize the page
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initially hide the admin panel
-            document.getElementById('admin-panel').style.display = 'none';
+        // 3D Animation with Three.js
+        function initThreeJS() {
+            const container = document.getElementById('animation-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true });
             
-            // Check if user was previously logged in
-            const rememberedEmail = localStorage.getItem('rememberedEmail');
-            if (rememberedEmail) {
-                document.getElementById('login-email').value = rememberedEmail;
-                document.getElementById('remember').checked = true;
-            }
-
-            // Password visibility toggle
-            document.getElementById('password-toggle').addEventListener('click', function() {
-                const passwordInput = document.getElementById('login-password');
-                const icon = this.querySelector('i');
-                
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                }
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Create floating geometric shapes
+            const geometry = new THREE.IcosahedronGeometry(1, 0);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: 0xf9c74f, 
+                shininess: 100,
+                transparent: true,
+                opacity: 0.7
             });
-
-            // Form submission
-            document.getElementById('admin-login-form').addEventListener('submit', function (e) {
-                e.preventDefault();
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                const remember = document.getElementById('remember').checked;
-
-                // Simple validation
-                if (!email || !password) {
-                    showError('Please fill in all fields');
-                    return;
-                }
-
-                // Email validation
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    showError('Please enter a valid email address');
-                    return;
-                }
-
-                // For demonstration purposes - in a real application, this would be a server call
-                if (email === 'admin@hotelinfinity.com' && password === 'admin123') {
-                    // Success - save to localStorage if remember me is checked
-                    if (remember) {
-                        localStorage.setItem('rememberedEmail', email);
-                    } else {
-                        localStorage.removeItem('rememberedEmail');
-                    }
-                    
-                    // Simulate successful login
-                    simulateLoginSuccess();
-                } else {
-                    showError('Invalid email or password');
-                }
-            });
-
-            // Forgot password
-            document.getElementById('forgot-password').addEventListener('click', function (e) {
-                e.preventDefault();
-                alert('Please contact system administrator to reset your password.');
-            });
-
-            // Logout button
-            document.getElementById('logout').addEventListener('click', function (e) {
-                e.preventDefault();
-                localStorage.removeItem('adminToken');
-                // Show login form and hide admin panel
-                document.getElementById('admin-login').style.display = 'block';
-                document.getElementById('admin-panel').style.display = 'none';
-            });
-
-            // Sidebar navigation
-            document.querySelectorAll('.sidebar a').forEach(link => {
-                link.addEventListener('click', function (e) {
-                    if (this.getAttribute('href').startsWith('#')) {
-                        e.preventDefault();
-
-                        // Hide all sections
-                        document.querySelectorAll('.col-md-9 > div').forEach(section => {
-                            section.style.display = 'none';
-                        });
-
-                        // Show the target section
-                        const targetId = this.getAttribute('href').substring(1);
-                        document.getElementById(targetId).style.display = 'block';
-
-                        // Update active link
-                        document.querySelectorAll('.sidebar a').forEach(a => {
-                            a.classList.remove('active');
-                        });
-                        this.classList.add('active');
-                    }
-                });
-            });
-
-            function showError(message) {
-                const errorDiv = document.getElementById('login-error');
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
-                
-                // Hide error after 5 seconds
-                setTimeout(() => {
-                    errorDiv.style.display = 'none';
-                }, 5000);
-            }
-
-            function simulateLoginSuccess() {
-                const submitButton = document.querySelector('button[type="submit"]');
-                const originalText = submitButton.innerHTML;
-                
-                // Change button to loading state
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Logging in...';
-                submitButton.disabled = true;
-                
-                // Simulate API call delay
-                setTimeout(() => {
-                    // Show success message
-                    const errorDiv = document.getElementById('login-error');
-                    errorDiv.classList.remove('alert-danger');
-                    errorDiv.classList.add('alert-success');
-                    errorDiv.innerHTML = '<i class="fas fa-check-circle me-2"></i>Login successful! Redirecting...';
-                    errorDiv.style.display = 'block';
-                    
-                    // Redirect to admin panel
-                    setTimeout(() => {
-                        // Hide login form and show admin panel
-                        document.getElementById('admin-login').style.display = 'none';
-                        document.getElementById('admin-panel').style.display = 'block';
-                        
-                        // Initialize charts
-                        initCharts();
-                    }, 1000);
-                }, 1500);
+            
+            const shapes = [];
+            const numShapes = 15;
+            
+            for (let i = 0; i < numShapes; i++) {
+                const shape = new THREE.Mesh(geometry, material);
+                shape.position.x = Math.random() * 20 - 10;
+                shape.position.y = Math.random() * 10 - 5;
+                shape.position.z = Math.random() * -10;
+                shape.rotation.x = Math.random() * Math.PI;
+                shape.rotation.y = Math.random() * Math.PI;
+                shape.scale.setScalar(Math.random() * 0.5 + 0.5);
+                scene.add(shape);
+                shapes.push(shape);
             }
             
-            // Initialize charts
-            function initCharts() {
-                // Booking Statistics Chart
-                const bookingCtx = document.getElementById('bookingChart').getContext('2d');
-                const bookingChart = new Chart(bookingCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        datasets: [{
-                            label: 'Room Bookings',
-                            data: [12, 19, 15, 17, 22, 18, 25, 28, 22, 25, 20, 23],
-                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        }, {
-                            label: 'Hall Bookings',
-                            data: [5, 8, 6, 9, 10, 7, 12, 14, 11, 13, 10, 12],
-                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
+            // Add ambient light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            // Add directional light
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            camera.position.z = 5;
+            
+            // Animation
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                shapes.forEach(shape => {
+                    shape.rotation.x += 0.005;
+                    shape.rotation.y += 0.01;
+                    shape.position.y += 0.005;
+                    
+                    if (shape.position.y > 5) {
+                        shape.position.y = -5;
                     }
                 });
-
-                // Revenue Sources Chart
-                const revenueCtx = document.getElementById('revenueChart').getContext('2d');
-                const revenueChart = new Chart(revenueCtx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['AC Rooms', 'Non-AC Rooms', 'Party Halls', 'Additional Services'],
-                        datasets: [{
-                            data: [45, 25, 20, 10],
-                            backgroundColor: [
-                                'rgba(54, 162, 235, 0.8)',
-                                'rgba(75, 192, 192, 0.8)',
-                                'rgba(255, 99, 132, 0.8)',
-                                'rgba(255, 205, 86, 0.8)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-
-                // Customer Ratings Chart
-                const ratingsCtx = document.getElementById('ratingsChart').getContext('2d');
-                const ratingsChart = new Chart(ratingsCtx, {
-                    type: 'polarArea',
-                    data: {
-                        labels: ['5 Stars', '4 Stars', '3 Stars', '2 Stars', '1 Star'],
-                        datasets: [{
-                            data: [45, 25, 15, 10, 5],
-                            backgroundColor: [
-                                'rgba(54, 162, 235, 0.8)',
-                                'rgba(75, 192, 192, 0.8)',
-                                'rgba(255, 205, 86, 0.8)',
-                                'rgba(255, 159, 64, 0.8)',
-                                'rgba(255, 99, 132, 0.8)'
-                            ]
-                        }]
-                    },
-                    options: {
-                        responsive: true
-                    }
-                });
-
-                // Customer Acquisition Chart
-                const acquisitionCtx = document.getElementById('acquisitionChart').getContext('2d');
-                const acquisitionChart = new Chart(acquisitionCtx, {
-                    type: 'line',
-                    data: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-                        datasets: [{
-                            label: 'New Customers',
-                            data: [30, 45, 35, 50, 55, 40, 65, 70, 60, 75, 65, 80],
-                            fill: false,
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            tension: 0.1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
+                
+                renderer.render(scene, camera);
             }
+            
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+        
+        // Modal functionality
+        function setupModals() {
+            const modals = document.querySelectorAll('.modal');
+            const bookButtons = document.querySelectorAll('.book-button');
+            const adminLoginBtn = document.getElementById('admin-login-btn');
+            const bookNowBtn = document.getElementById('book-now-btn');
+            const closeModalButtons = document.querySelectorAll('.close-modal');
+            
+            // Open modal function
+            function openModal(modalId) {
+                document.getElementById(modalId).style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            }
+            
+            // Close modal function
+            function closeModal(modalId) {
+                document.getElementById(modalId).style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Event listeners for opening modals
+            bookNowBtn.addEventListener('click', () => openModal('booking-modal'));
+            adminLoginBtn.addEventListener('click', () => openModal('admin-login-modal'));
+            
+            bookButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const type = this.getAttribute('data-type');
+                    const id = this.getAttribute('data-id');
+                    
+                    document.getElementById('booking-type').value = type;
+                    document.getElementById('booking-id').value = id;
+                    
+                    openModal('booking-modal');
+                });
+            });
+            
+            // Event listeners for closing modals
+            closeModalButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                });
+            });
+            
+            // Close modal when clicking outside
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeModal(this.id);
+                    }
+                });
+            });
+            
+            // Form submissions
+            document.getElementById('booking-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                closeModal('booking-modal');
+                openModal('payment-modal');
+            });
+            
+            document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Admin login functionality would connect to PHP backend in a real implementation.');
+                closeModal('admin-login-modal');
+            });
+            
+            // Razorpay payment integration
+            document.getElementById('rzp-button').addEventListener('click', function() {
+                const options = {
+                    "key": "rzp_test_YOUR_KEY_HERE", // Replace with your Razorpay key
+                    "amount": "1207500", // Amount in paise (₹12,075)
+                    "currency": "INR",
+                    "name": "Hotel Infinity",
+                    "description": "Booking Payment",
+                    "image": "https://example.com/your_logo",
+                    "handler": function(response) {
+                        alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                        closeModal('payment-modal');
+                    },
+                    "prefill": {
+                        "name": "Guest Name",
+                        "email": "guest@example.com",
+                        "contact": "9999999999"
+                    },
+                    "notes": {
+                        "address": "Hotel Infinity Address"
+                    },
+                    "theme": {
+                        "color": "#0a3d62"
+                    }
+                };
+                
+                const rzp = new Razorpay(options);
+                rzp.open();
+            });
+        }
+        
+        // Initialize everything when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initThreeJS();
+            setupModals();
+            
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('nav a').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                });
+            });
         });
     </script>
 </body>
