@@ -182,6 +182,7 @@
             border-radius: 10px;
             padding: 1.5rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
         
         .card-title {
@@ -296,6 +297,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .admin-table {
@@ -670,7 +673,7 @@
                     <i class="fas fa-chevron-down ml-auto"></i>
                 </div>
                 <div class="submenu">
-                    <div class="submenu-item active" data-section="rooms-list">All Rooms</div>
+                    <div class="submenu-item" data-section="rooms-list">All Rooms</div>
                     <div class="submenu-item" data-section="add-room">Add New Room</div>
                 </div>
                 
@@ -939,9 +942,9 @@
                 <div class="table-container">
                     <div class="table-header">
                         <h3 class="chart-title">All Rooms</h3>
-                        <button class="btn btn-primary" data-section="add-room">Add New Room</button>
+                        <button class="btn btn-primary" id="add-room-btn">Add New Room</button>
                     </div>
-                    <table class="admin-table">
+                    <table class="admin-table" id="rooms-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -953,50 +956,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Deluxe AC Room</td>
-                                <td>AC Room</td>
-                                <td>₹3,500</td>
-                                <td>2 Adults</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Non AC Room</td>
-                                <td>Non-AC Room</td>
-                                <td>₹2,000</td>
-                                <td>2 Adults</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Premium Suite</td>
-                                <td>Suite</td>
-                                <td>₹6,000</td>
-                                <td>3 Adults</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Family Room</td>
-                                <td>AC Room</td>
-                                <td>₹8,000</td>
-                                <td>4 Adults</td>
-                                <td><span class="status-badge status-pending">Inactive</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
+                            <!-- Room data will be populated by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -1006,6 +966,7 @@
                 <div class="form-container">
                     <h3 class="form-title">Add New Room</h3>
                     <form id="room-form">
+                        <input type="hidden" id="room-id" value="">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="room-name">Room Name</label>
@@ -1088,7 +1049,7 @@
                         
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Save Room</button>
-                            <button type="button" class="btn btn-secondary">Cancel</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-room">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -1099,9 +1060,9 @@
                 <div class="table-container">
                     <div class="table-header">
                         <h3 class="chart-title">All Halls</h3>
-                        <button class="btn btn-primary" data-section="add-hall">Add New Hall</button>
+                        <button class="btn btn-primary" id="add-hall-btn">Add New Hall</button>
                     </div>
-                    <table class="admin-table">
+                    <table class="admin-table" id="halls-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
@@ -1113,50 +1074,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Grand Ballroom</td>
-                                <td>Event Space</td>
-                                <td>₹25,000</td>
-                                <td>200 People</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Conference Hall</td>
-                                <td>Meeting Space</td>
-                                <td>₹15,000</td>
-                                <td>100 People</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Outdoor Garden</td>
-                                <td>Event Space</td>
-                                <td>₹30,000</td>
-                                <td>300 People</td>
-                                <td><span class="status-badge status-pending">Inactive</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Board Room</td>
-                                <td>Meeting Space</td>
-                                <td>₹10,000</td>
-                                <td>20 People</td>
-                                <td><span class="status-badge status-approved">Active</span></td>
-                                <td>
-                                    <button class="admin-action action-edit">Edit</button>
-                                    <button class="admin-action action-delete">Delete</button>
-                                </td>
-                            </tr>
+                            <!-- Hall data will be populated by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -1166,6 +1084,7 @@
                 <div class="form-container">
                     <h3 class="form-title">Add New Hall</h3>
                     <form id="hall-form">
+                        <input type="hidden" id="hall-id" value="">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="hall-name">Hall Name</label>
@@ -1242,7 +1161,7 @@
                         
                         <div class="form-actions">
                             <button type="submit" class="btn btn-primary">Save Hall</button>
-                            <button type="button" class="btn btn-secondary">Cancel</button>
+                            <button type="button" class="btn btn-secondary" id="cancel-hall">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -1448,15 +1367,15 @@
                     <div class="table-header">
                         <h3 class="chart-title">Guest Reviews</h3>
                         <div>
-                            <select style="margin-right: 10px;">
-                                <option>All Reviews</option>
-                                <option>Pending Approval</option>
-                                <option>Approved</option>
-                                <option>Rejected</option>
+                            <select id="review-filter" style="margin-right: 10px;">
+                                <option value="all">All Reviews</option>
+                                <option value="pending">Pending Approval</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
                             </select>
                         </div>
                     </div>
-                    <table class="admin-table">
+                    <table class="admin-table" id="reviews-table">
                         <thead>
                             <tr>
                                 <th>Guest</th>
@@ -1468,80 +1387,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Michael Johnson</td>
-                                <td>
-                                    <div style="color: #f9c74f;">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </td>
-                                <td>Excellent service and beautiful rooms!</td>
-                                <td>2023-10-12</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                                <td>
-                                    <button class="admin-action btn-success">Approve</button>
-                                    <button class="admin-action action-delete">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Sarah Williams</td>
-                                <td>
-                                    <div style="color: #f9c74f;">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="far fa-star"></i>
-                                    </div>
-                                </td>
-                                <td>Great experience, would recommend to others.</td>
-                                <td>2023-10-10</td>
-                                <td><span class="status-badge status-pending">Pending</span></td>
-                                <td>
-                                    <button class="admin-action btn-success">Approve</button>
-                                    <button class="admin-action action-delete">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>John Doe</td>
-                                <td>
-                                    <div style="color: #f9c74f;">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </td>
-                                <td>The stay was amazing! The AC room was spacious and clean.</td>
-                                <td>2023-10-08</td>
-                                <td><span class="status-badge status-approved">Approved</span></td>
-                                <td>
-                                    <button class="admin-action action-delete">Reject</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Jane Smith</td>
-                                <td>
-                                    <div style="color: #f9c74f;">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star-half-alt"></i>
-                                    </div>
-                                </td>
-                                <td>We hosted our company party in the Grand Ballroom. The experience was fantastic!</td>
-                                <td>2023-10-05</td>
-                                <td><span class="status-badge status-approved">Approved</span></td>
-                                <td>
-                                    <button class="admin-action action-delete">Reject</button>
-                                </td>
-                            </tr>
+                            <!-- Reviews will be populated by JavaScript -->
                         </tbody>
                     </table>
                 </div>
@@ -1657,7 +1503,32 @@
     </div>
 
     <script>
+        // Data storage for rooms, halls, and reviews
+        let rooms = JSON.parse(localStorage.getItem('rooms')) || [
+            { id: 1, name: 'Deluxe AC Room', type: 'AC Room', price: 3500, capacity: '2 Adults', status: 'active' },
+            { id: 2, name: 'Non AC Room', type: 'Non-AC Room', price: 2000, capacity: '2 Adults', status: 'active' },
+            { id: 3, name: 'Premium Suite', type: 'Suite', price: 6000, capacity: '3 Adults', status: 'active' },
+            { id: 4, name: 'Family Room', type: 'AC Room', price: 8000, capacity: '4 Adults', status: 'inactive' }
+        ];
+        
+        let halls = JSON.parse(localStorage.getItem('halls')) || [
+            { id: 1, name: 'Grand Ballroom', type: 'Event Space', price: 25000, capacity: '200 People', status: 'active' },
+            { id: 2, name: 'Conference Hall', type: 'Meeting Space', price: 15000, capacity: '100 People', status: 'active' },
+            { id: 3, name: 'Outdoor Garden', type: 'Event Space', price: 30000, capacity: '300 People', status: 'inactive' },
+            { id: 4, name: 'Board Room', type: 'Meeting Space', price: 10000, capacity: '20 People', status: 'active' }
+        ];
+        
+        let reviews = JSON.parse(localStorage.getItem('reviews')) || [
+            { id: 1, guest: 'Michael Johnson', rating: 5, review: 'Excellent service and beautiful rooms!', date: '2023-10-12', status: 'pending' },
+            { id: 2, guest: 'Sarah Williams', rating: 4, review: 'Great experience, would recommend to others.', date: '2023-10-10', status: 'pending' },
+            { id: 3, guest: 'John Doe', rating: 5, review: 'The stay was amazing! The AC room was spacious and clean.', date: '2023-10-08', status: 'approved' },
+            { id: 4, guest: 'Jane Smith', rating: 4.5, review: 'We hosted our company party in the Grand Ballroom. The experience was fantastic!', date: '2023-10-05', status: 'approved' }
+        ];
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize the dashboard
+            initDashboard();
+            
             // Toggle submenus
             const menuItems = document.querySelectorAll('.menu-item.has-submenu');
             menuItems.forEach(item => {
@@ -1688,10 +1559,7 @@
                     this.classList.add('active');
                     
                     // Show the corresponding section
-                    document.querySelectorAll('.dashboard-section').forEach(section => {
-                        section.classList.remove('active');
-                    });
-                    document.getElementById(sectionId).classList.add('active');
+                    showSection(sectionId);
                     
                     // Update page title
                     const pageTitle = document.querySelector('.page-title');
@@ -1700,7 +1568,28 @@
                     } else {
                         pageTitle.textContent = this.textContent.trim();
                     }
+                    
+                    // Load data for specific sections
+                    if (sectionId === 'rooms-list') {
+                        loadRoomsTable();
+                    } else if (sectionId === 'halls-list') {
+                        loadHallsTable();
+                    } else if (sectionId === 'reviews') {
+                        loadReviewsTable();
+                    }
                 });
+            });
+            
+            // Add room button
+            document.getElementById('add-room-btn').addEventListener('click', function() {
+                resetRoomForm();
+                showSection('add-room');
+            });
+            
+            // Add hall button
+            document.getElementById('add-hall-btn').addEventListener('click', function() {
+                resetHallForm();
+                showSection('add-hall');
             });
             
             // Image upload functionality
@@ -1757,20 +1646,34 @@
             // Form submissions
             document.getElementById('room-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                alert('Room saved successfully!');
-                // In a real application, this would send data to the server
+                saveRoom();
             });
             
             document.getElementById('hall-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                alert('Hall saved successfully!');
-                // In a real application, this would send data to the server
+                saveHall();
             });
             
             document.getElementById('settings-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 alert('Settings saved successfully!');
                 // In a real application, this would send data to the server
+            });
+            
+            // Cancel buttons
+            document.getElementById('cancel-room').addEventListener('click', function() {
+                resetRoomForm();
+                showSection('rooms-list');
+            });
+            
+            document.getElementById('cancel-hall').addEventListener('click', function() {
+                resetHallForm();
+                showSection('halls-list');
+            });
+            
+            // Review filter
+            document.getElementById('review-filter').addEventListener('change', function() {
+                loadReviewsTable();
             });
             
             // Logout functionality
@@ -1780,55 +1683,341 @@
                     // In a real application, this would redirect to the login page
                 }
             });
-            
-            // Approve/reject review buttons
-            document.querySelectorAll('.btn-success').forEach(button => {
-                button.addEventListener('click', function() {
-                    const row = this.closest('tr');
-                    row.querySelector('.status-badge').textContent = 'Approved';
-                    row.querySelector('.status-badge').className = 'status-badge status-approved';
-                    row.querySelector('td:last-child').innerHTML = '<button class="admin-action action-delete">Reject</button>';
-                    
-                    // Re-attach event listener to the new button
-                    row.querySelector('.action-delete').addEventListener('click', function() {
-                        const row = this.closest('tr');
-                        row.querySelector('.status-badge').textContent = 'Rejected';
-                        row.querySelector('.status-badge').className = 'status-badge status-rejected';
-                        row.querySelector('td:last-child').innerHTML = '';
-                    });
-                });
-            });
-            
-            document.querySelectorAll('.action-delete').forEach(button => {
-                button.addEventListener('click', function() {
-                    if (this.textContent === 'Reject') {
-                        const row = this.closest('tr');
-                        row.querySelector('.status-badge').textContent = 'Rejected';
-                        row.querySelector('.status-badge').className = 'status-badge status-rejected';
-                        row.querySelector('td:last-child').innerHTML = '';
-                    } else if (confirm('Are you sure you want to delete this item?')) {
-                        this.closest('tr').remove();
-                    }
-                });
-            });
-            
-            // Edit buttons
-            document.querySelectorAll('.action-edit').forEach(button => {
-                button.addEventListener('click', function() {
-                    const section = this.closest('tr').querySelector('td:first-child').textContent.trim().includes('Room') ? 'add-room' : 'add-hall';
-                    document.querySelectorAll('.dashboard-section').forEach(s => s.classList.remove('active'));
-                    document.getElementById(section).classList.add('active');
-                    
-                    // Update active menu
-                    document.querySelectorAll('.menu-item, .submenu-item').forEach(item => item.classList.remove('active'));
-                    document.querySelector(`[data-section="${section}"]`).classList.add('active');
-                    
-                    // Update page title
-                    document.querySelector('.page-title').textContent = 'Edit ' + 
-                        this.closest('tr').querySelector('td:first-child').textContent.trim();
-                });
-            });
         });
+        
+        function initDashboard() {
+            // Load initial data
+            loadRoomsTable();
+            loadHallsTable();
+            loadReviewsTable();
+        }
+        
+        function loadRoomsTable() {
+            const tableBody = document.querySelector('#rooms-table tbody');
+            tableBody.innerHTML = '';
+            
+            rooms.forEach(room => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${room.name}</td>
+                    <td>${room.type}</td>
+                    <td>₹${room.price.toLocaleString()}</td>
+                    <td>${room.capacity}</td>
+                    <td><span class="status-badge ${room.status === 'active' ? 'status-approved' : room.status === 'inactive' ? 'status-pending' : 'status-rejected'}">${room.status.charAt(0).toUpperCase() + room.status.slice(1)}</span></td>
+                    <td>
+                        <button class="admin-action action-edit" data-id="${room.id}">Edit</button>
+                        <button class="admin-action action-delete" data-id="${room.id}">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('#rooms-table .action-edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomId = this.getAttribute('data-id');
+                    editRoom(roomId);
+                });
+            });
+            
+            document.querySelectorAll('#rooms-table .action-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const roomId = this.getAttribute('data-id');
+                    deleteRoom(roomId);
+                });
+            });
+        }
+        
+        function loadHallsTable() {
+            const tableBody = document.querySelector('#halls-table tbody');
+            tableBody.innerHTML = '';
+            
+            halls.forEach(hall => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${hall.name}</td>
+                    <td>${hall.type}</td>
+                    <td>₹${hall.price.toLocaleString()}</td>
+                    <td>${hall.capacity}</td>
+                    <td><span class="status-badge ${hall.status === 'active' ? 'status-approved' : hall.status === 'inactive' ? 'status-pending' : 'status-rejected'}">${hall.status.charAt(0).toUpperCase() + hall.status.slice(1)}</span></td>
+                    <td>
+                        <button class="admin-action action-edit" data-id="${hall.id}">Edit</button>
+                        <button class="admin-action action-delete" data-id="${hall.id}">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('#halls-table .action-edit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const hallId = this.getAttribute('data-id');
+                    editHall(hallId);
+                });
+            });
+            
+            document.querySelectorAll('#halls-table .action-delete').forEach(button => {
+                button.addEventListener('click', function() {
+                    const hallId = this.getAttribute('data-id');
+                    deleteHall(hallId);
+                });
+            });
+        }
+        
+        function loadReviewsTable() {
+            const tableBody = document.querySelector('#reviews-table tbody');
+            const filterValue = document.getElementById('review-filter').value;
+            tableBody.innerHTML = '';
+            
+            const filteredReviews = reviews.filter(review => {
+                if (filterValue === 'all') return true;
+                return review.status === filterValue;
+            });
+            
+            filteredReviews.forEach(review => {
+                const stars = generateStars(review.rating);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${review.guest}</td>
+                    <td>
+                        <div style="color: #f9c74f;">
+                            ${stars}
+                        </div>
+                    </td>
+                    <td>${review.review}</td>
+                    <td>${review.date}</td>
+                    <td><span class="status-badge ${review.status === 'approved' ? 'status-approved' : review.status === 'pending' ? 'status-pending' : 'status-rejected'}">${review.status.charAt(0).toUpperCase() + review.status.slice(1)}</span></td>
+                    <td>
+                        ${review.status === 'pending' ? `
+                            <button class="admin-action btn-success approve-review" data-id="${review.id}">Approve</button>
+                            <button class="admin-action action-delete reject-review" data-id="${review.id}">Reject</button>
+                        ` : ''}
+                        ${review.status === 'approved' ? `
+                            <button class="admin-action action-delete reject-review" data-id="${review.id}">Reject</button>
+                        ` : ''}
+                        ${review.status === 'rejected' ? `
+                            <button class="admin-action btn-success approve-review" data-id="${review.id}">Approve</button>
+                        ` : ''}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to approve and reject buttons
+            document.querySelectorAll('.approve-review').forEach(button => {
+                button.addEventListener('click', function() {
+                    const reviewId = this.getAttribute('data-id');
+                    approveReview(reviewId);
+                });
+            });
+            
+            document.querySelectorAll('.reject-review').forEach(button => {
+                button.addEventListener('click', function() {
+                    const reviewId = this.getAttribute('data-id');
+                    rejectReview(reviewId);
+                });
+            });
+        }
+        
+        function generateStars(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 !== 0;
+            
+            for (let i = 0; i < fullStars; i++) {
+                stars += '<i class="fas fa-star"></i>';
+            }
+            
+            if (hasHalfStar) {
+                stars += '<i class="fas fa-star-half-alt"></i>';
+            }
+            
+            const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+            for (let i = 0; i < emptyStars; i++) {
+                stars += '<i class="far fa-star"></i>';
+            }
+            
+            return stars;
+        }
+        
+        function saveRoom() {
+            const roomId = document.getElementById('room-id').value;
+            const roomData = {
+                name: document.getElementById('room-name').value,
+                type: document.getElementById('room-type').value,
+                price: parseInt(document.getElementById('room-price').value),
+                capacity: document.getElementById('room-capacity').options[document.getElementById('room-capacity').selectedIndex].text,
+                size: document.getElementById('room-size').value,
+                status: document.getElementById('room-status').value,
+                description: document.getElementById('room-description').value
+            };
+            
+            if (roomId) {
+                // Update existing room
+                const index = rooms.findIndex(room => room.id == roomId);
+                if (index !== -1) {
+                    rooms[index] = { ...rooms[index], ...roomData };
+                }
+            } else {
+                // Add new room
+                roomData.id = rooms.length > 0 ? Math.max(...rooms.map(room => room.id)) + 1 : 1;
+                rooms.push(roomData);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('rooms', JSON.stringify(rooms));
+            
+            alert('Room saved successfully!');
+            resetRoomForm();
+            showSection('rooms-list');
+            loadRoomsTable();
+        }
+        
+        function saveHall() {
+            const hallId = document.getElementById('hall-id').value;
+            const hallData = {
+                name: document.getElementById('hall-name').value,
+                type: document.getElementById('hall-type').value,
+                price: parseInt(document.getElementById('hall-price').value),
+                capacity: document.getElementById('hall-capacity').value + ' People',
+                size: document.getElementById('hall-size').value,
+                status: document.getElementById('hall-status').value,
+                description: document.getElementById('hall-description').value
+            };
+            
+            if (hallId) {
+                // Update existing hall
+                const index = halls.findIndex(hall => hall.id == hallId);
+                if (index !== -1) {
+                    halls[index] = { ...halls[index], ...hallData };
+                }
+            } else {
+                // Add new hall
+                hallData.id = halls.length > 0 ? Math.max(...halls.map(hall => hall.id)) + 1 : 1;
+                halls.push(hallData);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('halls', JSON.stringify(halls));
+            
+            alert('Hall saved successfully!');
+            resetHallForm();
+            showSection('halls-list');
+            loadHallsTable();
+        }
+        
+        function editRoom(id) {
+            const room = rooms.find(room => room.id == id);
+            if (room) {
+                document.getElementById('room-id').value = room.id;
+                document.getElementById('room-name').value = room.name;
+                document.getElementById('room-type').value = room.type.toLowerCase().replace(' ', '-');
+                document.getElementById('room-price').value = room.price;
+                
+                // Set capacity
+                const capacitySelect = document.getElementById('room-capacity');
+                for (let i = 0; i < capacitySelect.options.length; i++) {
+                    if (capacitySelect.options[i].text === room.capacity) {
+                        capacitySelect.selectedIndex = i;
+                        break;
+                    }
+                }
+                
+                document.getElementById('room-size').value = room.size || '';
+                document.getElementById('room-status').value = room.status;
+                document.getElementById('room-description').value = room.description || '';
+                
+                showSection('add-room');
+            }
+        }
+        
+        function editHall(id) {
+            const hall = halls.find(hall => hall.id == id);
+            if (hall) {
+                document.getElementById('hall-id').value = hall.id;
+                document.getElementById('hall-name').value = hall.name;
+                document.getElementById('hall-type').value = hall.type.toLowerCase().replace(' ', '-');
+                document.getElementById('hall-price').value = hall.price;
+                
+                // Extract capacity number
+                const capacity = parseInt(hall.capacity);
+                document.getElementById('hall-capacity').value = isNaN(capacity) ? '' : capacity;
+                
+                document.getElementById('hall-size').value = hall.size || '';
+                document.getElementById('hall-status').value = hall.status;
+                document.getElementById('hall-description').value = hall.description || '';
+                
+                showSection('add-hall');
+            }
+        }
+        
+        function deleteRoom(id) {
+            if (confirm('Are you sure you want to delete this room?')) {
+                rooms = rooms.filter(room => room.id != id);
+                localStorage.setItem('rooms', JSON.stringify(rooms));
+                loadRoomsTable();
+            }
+        }
+        
+        function deleteHall(id) {
+            if (confirm('Are you sure you want to delete this hall?')) {
+                halls = halls.filter(hall => hall.id != id);
+                localStorage.setItem('halls', JSON.stringify(halls));
+                loadHallsTable();
+            }
+        }
+        
+        function approveReview(id) {
+            const review = reviews.find(review => review.id == id);
+            if (review) {
+                review.status = 'approved';
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                loadReviewsTable();
+            }
+        }
+        
+        function rejectReview(id) {
+            const review = reviews.find(review => review.id == id);
+            if (review) {
+                review.status = 'rejected';
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                loadReviewsTable();
+            }
+        }
+        
+        function resetRoomForm() {
+            document.getElementById('room-form').reset();
+            document.getElementById('room-id').value = '';
+            document.getElementById('room-image-preview').innerHTML = '';
+        }
+        
+        function resetHallForm() {
+            document.getElementById('hall-form').reset();
+            document.getElementById('hall-id').value = '';
+            document.getElementById('hall-image-preview').innerHTML = '';
+        }
+        
+        function showSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update active menu
+            document.querySelectorAll('.menu-item, .submenu-item').forEach(item => item.classList.remove('active'));
+            const menuItem = document.querySelector(`[data-section="${sectionId}"]`);
+            if (menuItem) {
+                menuItem.classList.add('active');
+                
+                // If it's a submenu item, also activate its parent
+                if (menuItem.classList.contains('submenu-item')) {
+                    const parentMenu = menuItem.closest('.submenu').previousElementSibling;
+                    if (parentMenu) {
+                        parentMenu.classList.add('active');
+                    }
+                }
+            }
+        }
     </script>
 </body>
 </html>
