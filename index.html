@@ -1676,13 +1676,18 @@
                 loadReviewsTable();
             });
             
+            
             // Logout functionality
             document.getElementById('logout-admin').addEventListener('click', function() {
-                if (confirm('Are you sure you want to logout?')) {
-                    alert('Logout successful!');
-                    // In a real application, this would redirect to the login page
-                }
-            });
+                    if (confirm('Are you sure you want to logout?')) {
+                       // Clear any authentication data if stored
+                       localStorage.removeItem('authToken');
+                       sessionStorage.removeItem('authToken');
+        
+                       // Redirect to main website
+                       window.location.href = 'index.html';
+                      }
+                        });
         });
         
         function initDashboard() {
